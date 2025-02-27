@@ -1,0 +1,10 @@
+component("webview_contents") {
+  sources = [
+    "aloha_web_contents_view_delegate_views.cc",
+    "aloha_web_contents_view_delegate_views.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser"
+  ]
+}

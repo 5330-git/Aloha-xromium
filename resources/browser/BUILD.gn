@@ -1,0 +1,32 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "aloha_browser"
+
+  static_files = [
+    # "ai-agent-dialog/dist/dialog-index.css",
+    # "ai-agent-dialog/dist/favicon.ico",
+    # "ai-agent-dialog/dist/index.html",
+    
+    "index.css",
+    "index.html",
+  ]
+
+  # non_web_component_files = [ "ai-agent-dialog/dist/dialog-index.js"]
+  non_web_component_files = [ "index.ts"]
+
+  mojo_files = [
+    "$root_gen_dir/aloha/browser/ui/web/browser.mojom-webui.ts",
+  ]
+
+  mojo_files_deps =
+      [ "//aloha:browser_mojo_bindings_ts__generator" ]
+
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+
+  grit_output_dir = "$target_gen_dir"
+}

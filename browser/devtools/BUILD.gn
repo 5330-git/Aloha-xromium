@@ -1,0 +1,24 @@
+source_set("aloha_devtools") {
+  testonly = true
+  sources = [
+    "devtools_frontend.cc",
+    "devtools_frontend.h",
+    "devtools_manager_delegate.cc",
+    "devtools_manager_delegate.h",
+    "devtools_server.cc",
+    "devtools_server.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/app",
+    "//content/public/browser",
+    "//content/public/renderer",
+    "//ipc",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//ui/base",
+    "//ui/display",
+    "//ui/platform_window",
+    "//ui/views",
+  ]
+}

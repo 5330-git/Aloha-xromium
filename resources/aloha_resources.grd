@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit base_dir="." latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="grit/aloha_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="aloha_resources.pak"
+            type="data_package" lang="en" />
+  </outputs>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <message translateable="false" name="IDS_ALOHA_WINDOW_TITLE">
+        Aloha
+      </message>
+      <message translateable="false" name="IDS_ALOHA_WEBSHELL_TITLE">
+        Aloha Webshell
+      </message>
+      <message translateable="false" name="IDS_ALOHA_DEVTOOLS_WINDOW_TITLE">
+        Aloha Devtools
+      </message>
+    </messages>
+  </release>
+</grit>

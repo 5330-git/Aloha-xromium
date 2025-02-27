@@ -1,0 +1,41 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 60460cbc27..19935cb92f 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -877,6 +877,9 @@ group("gn_all") {
+   if (checkout_src_internal) {
+     deps += [ "//internal:all" ]
+   }
++  # BUILD ALOHA
++  deps += ["//aloha:aloha"]
++  # END ALOHA
+ }
+ 
+ # All Rust targets. This is provided for convenience while developing Rust to
+diff --git a/tools/gritsettings/resource_ids.spec b/tools/gritsettings/resource_ids.spec
+index a0a333d95d..5eb27f78c5 100644
+--- a/tools/gritsettings/resource_ids.spec
++++ b/tools/gritsettings/resource_ids.spec
+@@ -1385,11 +1385,21 @@
+   "<(SHARED_INTERMEDIATE_DIR)/third_party/blink/public/strings/permission_element_generated_strings.grd": {
+     "META": {"sizes": {"messages": [2000],}},
+     "messages": [10080],
+-  }
++  },
+ 
+   # END "everything else" section.
+   # Everything but chrome/, components/, content/, and ios/
+ 
+   # Thinking about appending to the end?
+   # Please read the header and find the right section above instead.
++
++  # START aloha/ section.
++  "aloha/resources/aloha_resources.grd": {
++    "messages": [12000],
++  },
++  "<(SHARED_INTERMEDIATE_DIR)/aloha/resources/browser/resources.grd": {
++    "META": {"sizes": {"includes": [10]}},
++    "includes": [12500],
++  }
++  # END aloha/ section.
+ }

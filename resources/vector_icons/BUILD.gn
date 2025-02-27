@@ -1,0 +1,29 @@
+import("//build/config/chrome_build.gni")
+import("//components/vector_icons/vector_icons.gni")
+aggregate_vector_icons("aloha_vector_icons") {
+  icon_directory = "."
+
+  # aloha 所需的 icon
+  sources = [
+    "caret_left.icon",
+    "caret_right.icon",
+    "eche_close.icon",
+    "gd_settings.icon",
+    "ksv_reload.icon",
+    "link.icon",
+    "move_group_to_new_window_refresh.icon",
+    "navigate_home.icon",
+    "open_devtools.icon",
+  ]
+}
+
+source_set("vector_icons") {
+  sources = get_target_outputs(":aloha_vector_icons")
+
+  deps = [
+    ":aloha_vector_icons",
+    "//base",
+    "//skia",
+    "//ui/gfx",
+  ]
+}

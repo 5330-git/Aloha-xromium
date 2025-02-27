@@ -1,0 +1,6 @@
+module aloha.devtools.mojom;
+
+interface BrowserToDevtoolsCommunication {
+  // 在主页面通知 Devtools 关闭
+  PostToClose();
+};

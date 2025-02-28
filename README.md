@@ -6,14 +6,14 @@
 
 ## 编译/运行方法
 
-1. 仓库拉取
+1. 在 chromium 源代码目录下（`src` 目录）拉取 `aloha` 仓库：
    1. ```bash
       # 国内可以拉取 gitee 的地址：
       git clone https://gitee.com/ordinaryAnton/aloha-xcromium.git aloha
       ```
 2. 运行补丁脚本将必要更改打入 chromium 代码中
    1. ```bash
-      python aloha/tools/patcher/runme.py -p .
+      python aloha/tools/patcher/runme.py -a
       ```
    2. 此外还可以选择手动补丁
       1. ```bash
@@ -33,8 +33,6 @@
       gn gen out/Default
       autoninja -C out/Default aloha
       ```
-
-
 
 ## 博客链接
 

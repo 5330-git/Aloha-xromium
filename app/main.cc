@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "aloha/app/main_delegate.h"
-#include "aloha/browser/ui/native/widget_delegate_view.h"
+// #include "aloha/browser/ui/native/widget_delegate_view.h"
+#include "aloha/browser/ui/views/widget/widget_delegate_view.h"
 #include "aloha/views_content_client/views_content_client.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"

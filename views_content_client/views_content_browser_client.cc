@@ -8,8 +8,9 @@
 #include <utility>
 
 #include "aloha/browser/devtools/devtools_manager_delegate.h"
-#include "aloha/browser/ui/native/aloha_web_contents_view_delegate_views.h"
-#include "aloha/browser/ui/native/widget_delegate_view.h"
+// #include "aloha/browser/ui/native/aloha_web_contents_view_delegate_views.h"
+// #include "aloha/browser/ui/native/widget_delegate_view.h"
+#include "aloha/browser/ui/views/aloha_web_contents_view_delegate_views.h"
 #include "aloha/grit/aloha_resources.h"
 #include "aloha/views_content_client/views_content_client.h"
 #include "aloha/views_content_client/views_content_client_main_parts.h"

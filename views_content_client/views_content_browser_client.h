@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "aloha/browser/ui/native/widget_delegate_view.h"
+// #include "aloha/browser/ui/native/widget_delegate_view.h"
 #include "aloha/views_content_client/views_content_client_main_parts.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/content_browser_client.h"
@@ -44,8 +44,6 @@ class ViewsContentBrowserClient : public content::ContentBrowserClient {
  private:
   raw_ptr<ViewsContentClient> views_content_client_ = nullptr;
   raw_ptr<ViewsContentClientMainParts> views_content_client_main_parts_ = nullptr;
-  // 记录 webcontent 到 webappview 的映射
-  std::map<content::WebContents*, aloha::WebAppView*> web_app_views_;
 };
 
 }  // namespace aloha

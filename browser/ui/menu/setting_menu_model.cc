@@ -1,4 +1,4 @@
-#include "aloha/browser/ui/native/setting_menu_model.h"
+#include "aloha/browser/ui/menu/setting_menu_model.h"
 
 #include "aloha/resources/vector_icons/vector_icons.h"
 #include "base/logging.h"

@@ -31,7 +31,8 @@ source_set("views_content_client") {
 
   defines = [ "VIEWS_CONTENT_CLIENT_IMPLEMENTATION" ]
   deps = [
-    "//aloha/browser/ui/native:aloha_native",
+    # "//aloha/browser/ui/native:aloha_native",
+    "//aloha/browser/ui/views:views",
     "//aloha/browser/devtools:aloha_devtools",
     "//base",
     "//base:i18n",

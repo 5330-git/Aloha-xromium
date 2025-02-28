@@ -1,5 +1,5 @@
-#ifndef XXXX
-#define XXXX
+#ifndef _ALOHA_BROWSER_UI_MENU_SETTING_MENU_MODEL_H_
+#define _ALOHA_BROWSER_UI_MENU_SETTING_MENU_MODEL_H_ 
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"

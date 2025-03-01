@@ -8,8 +8,10 @@
 
 1. 在 chromium 源代码目录下（`src` 目录）拉取 `aloha` 仓库：
    1. ```bash
+      # github:
+      https://github.com/5330-git/Aloha-xromium.git aloha
       # 国内可以拉取 gitee 的地址：
-      git clone https://gitee.com/ordinaryAnton/aloha-xcromium.git aloha
+      git clone https://gitee.com/ordinaryAnton/aloha-xromium.git aloha
       ```
 2. 运行补丁脚本将必要更改打入 chromium 代码中
    1. ```bash

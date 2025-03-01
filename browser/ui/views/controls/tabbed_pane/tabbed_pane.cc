@@ -2,7 +2,7 @@
 // // Use of this source code is governed by a BSD-style license that can be
 // // found in the LICENSE file.
 
-#include "aloha/views/controls/tabbed_pane/tabbed_pane.h"
+#include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane.h"
 
 #include <algorithm>
 #include <string>
@@ -686,13 +686,13 @@ void AlohaTabbedPane::RemoveTabAt(size_t index) {
 void AlohaTabbedPane::RemoveTab(AlohaTabbedPaneTab* tab) {
   // 在 ui\views\controls\tabbed_pane\tabbed_pane.h 基础上新增的接口
   if (!tab) {
-    return; 
+    return;
   }
   for (size_t i = 0; i < GetTabCount(); i++) {
     if (tab == tab_strip_->GetTabAtIndex(i)) {
       RemoveTabAt(i);
       break;
-    } 
+    }
   }
 }
 

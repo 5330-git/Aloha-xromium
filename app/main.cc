@@ -55,8 +55,8 @@ void CreateAndShowMainWindow(aloha::ViewsContentClient* views_content_client,
                              content::BrowserContext* browser_context,
                              gfx::NativeWindow window_context) {
   // 窗口已存在
-  if (aloha::NativeWidgetDelegateView::instance()) {
-    aloha::NativeWidgetDelegateView::instance()->GetWidget()->Activate();
+  if (aloha::MainWidgetDelegateView::instance()) {
+    aloha::MainWidgetDelegateView::instance()->GetWidget()->Activate();
     return;
   }
 
@@ -66,7 +66,7 @@ void CreateAndShowMainWindow(aloha::ViewsContentClient* views_content_client,
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
   aloha::SetDefaultBrowserContext(browser_context);
-  params.delegate = new aloha::NativeWidgetDelegateView();
+  params.delegate = new aloha::MainWidgetDelegateView();
   params.delegate->RegisterWindowClosingCallback(
       std::move(views_content_client->quit_closure()));
 

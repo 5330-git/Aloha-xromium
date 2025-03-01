@@ -8,8 +8,6 @@ import("//build/config/ui.gni")
 source_set("views_content_client") {
   testonly = true
   sources = [
-    # "aloha_web_contents_view_delegate_views.cc",
-    # "aloha_web_contents_view_delegate_views.h",
     "views_content_browser_client.cc",
     "views_content_browser_client.h",
     "views_content_client.cc",
@@ -31,9 +29,8 @@ source_set("views_content_client") {
 
   defines = [ "VIEWS_CONTENT_CLIENT_IMPLEMENTATION" ]
   deps = [
-    # "//aloha/browser/ui/native:aloha_native",
-    "//aloha/browser/ui/views:views",
     "//aloha/browser/devtools:aloha_devtools",
+    "//aloha/browser/ui/views:views",
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
@@ -50,8 +47,8 @@ source_set("views_content_client") {
     "//ui/resources",
     "//ui/resources:ui_test_pak",
     "//ui/resources:ui_test_pak_data_200_percent",
-    "//ui/views:views",
     "//ui/views:test_support",
+    "//ui/views:views",
     "//ui/views/controls/webview:webview",
   ]
 

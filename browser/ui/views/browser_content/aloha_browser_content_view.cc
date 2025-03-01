@@ -1,11 +1,13 @@
-#include "aloha/browser/ui/views/aloha_browser_content_view.h"
+#include "aloha/browser/ui/views/browser_content/aloha_browser_content_view.h"
 
 #include <memory>
 #include <utility>
 
 #include "aloha/resources/vector_icons/vector_icons.h"
+#include "aloha_browser_content_view.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_handle.h"
@@ -17,15 +19,14 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
-#include "widget/widget_delegate_view.h"
+// #include "widget/widget_delegate_view.h"
 
 namespace aloha {
 
 AlohaBrowserContentView::AlohaBrowserContentView(
     const GURL& init_url,
     AlohaWidgetDelegateView* origin_widget_delegate_view)
-    : owned_widget_delegate_view_(origin_widget_delegate_view),
-      origin_widget_delegate_view_(origin_widget_delegate_view),
+    : origin_widget_delegate_view_(origin_widget_delegate_view),
       init_url_(init_url) {
   // 将布局管理器设置到当前视图
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -35,13 +36,15 @@ AlohaBrowserContentView::AlohaBrowserContentView(
   // 初始化 webview
   sub_views_.webview->SetBrowserContext(GetDefaultBrowserContext());
   sub_views_.webview->GetWebContents()->SetDelegate(
-      owned_widget_delegate_view_->web_contents_delegate());
+      origin_widget_delegate_view->web_contents_delegate());
   Observe(sub_views_.webview->GetWebContents());
   sub_views_.webview->LoadInitialURL(init_url_);
   sub_views_.webview->GetWebContents()->Focus();
 }
 
-AlohaBrowserContentView::~AlohaBrowserContentView() = default;
+AlohaBrowserContentView::~AlohaBrowserContentView() {
+  CloseChildWidgets();
+}
 
 void AlohaBrowserContentView::Init() {
   sub_views_.top_bar_right_view->AddChildView(
@@ -125,46 +128,6 @@ AlohaBrowserContentView::GetContentContainerView() {
   return container;
 }
 
-void AlohaBrowserContentView::ShowInIndependentWindow() {
-  if (owned_widget_delegate_view_ != origin_widget_delegate_view_) {
-    // 已经在独立窗口中打开了
-    return;
-  }
-  std::unique_ptr<views::View> content_view =
-      owned_widget_delegate_view_->MoveOutBrowserContentView(this);
-  views::Widget* independent_widget = new views::Widget();
-  views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW);
-  params.name = "Test";
-  owned_widget_delegate_view_ = new IndependentWidgetDelegateView();
-  params.delegate = owned_widget_delegate_view_;
-
-  independent_widget->Init(std::move(params));
-  // 为 origin_widget_delegate_view_ (父窗口)注册回调，确保其关闭前独立窗口被关闭
-  origin_widget_delegate_view_->RegisterWindowWillCloseCallback(
-      base::BindOnce(&views::Widget::Close,
-                     owned_widget_delegate_view_->GetWidget()->GetWeakPtr()));
-
-  owned_widget_delegate_view_->RegisterWindowWillCloseCallback(base::BindOnce(
-      &AlohaBrowserContentView::MoveBackToTabFromIndependentWindow,
-      base::Unretained(this)));
-  owned_widget_delegate_view_->AddBrowserContentView(params.name,
-                                                     std::move(content_view));
-
-  independent_widget->Show();
-  open_view_in_new_window_btn_->SetEnabled(false);
-}
-
-void AlohaBrowserContentView::MoveBackToTabFromIndependentWindow() {
-  LOG(INFO) << "MoveWindowContentBackToTab";
-  std::unique_ptr<views::View> self =
-      owned_widget_delegate_view_->MoveOutBrowserContentView(this);
-  origin_widget_delegate_view_->AddBrowserContentView("", std::move(self));
-  owned_widget_delegate_view_ = origin_widget_delegate_view_;
-  open_view_in_new_window_btn_->SetEnabled(true);
-}
-
 void AlohaBrowserContentView::ReloadContents() {
   if (sub_views_.webview) {
     sub_views_.webview->GetWebContents()->GetController().Reload(
@@ -220,6 +183,7 @@ void AlohaBrowserContentView::OpenDevtoolsAndInspect() {
             << sub_views_.webview->GetWebContents()->GetURL().spec();
   if (devtools_view_) {
     LOG(INFO) << "DevTools view already opened";
+    devtools_view_->GetWidget()->Activate();
     return;
   }
 
@@ -230,11 +194,11 @@ void AlohaBrowserContentView::OpenDevtoolsAndInspect() {
     LOG(INFO) << "inspect:" << devtools_frontend_->frontend_url().spec();
   }
 
-  auto* devtools_widget = new views::Widget();
+  views::Widget* devtools_widget = new views::Widget();
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  auto* delegate_view = new IndependentWidgetDelegateView();
+  auto* delegate_view = new SimpleWidgetDelegateView();
   params.delegate = delegate_view;
 
   auto devtools_view = std::make_unique<AlohaBrowserContentView>(
@@ -248,15 +212,20 @@ void AlohaBrowserContentView::OpenDevtoolsAndInspect() {
 
   devtools_widget->Init(std::move(params));
   delegate_view->RegisterWindowWillCloseCallback(base::BindOnce(
-      [](AlohaBrowserContentView* self) {
+      [](AlohaWidgetDelegateView* delegate_view,
+         AlohaBrowserContentView* self) {
         // 窗口关闭，清空 devtools_frontend_
+        self->devtools_view_->CloseChildWidgets();
         self->devtools_view_ = nullptr;
+        delegate_view->WindowClosing();
       },
-      base::Unretained(this)));
-  // 为 root_widget_view_ 注册回调，确保其关闭前独立窗口被关闭
-  owned_widget_delegate_view_->RegisterWindowWillCloseCallback(base::BindOnce(
-      &views::Widget::Close, delegate_view->GetWidget()->GetWeakPtr()));
+      base::Unretained(delegate_view), base::Unretained(this)));
+
   devtools_widget->Show();
+  AddChildWidget(devtools_widget->GetWeakPtr());
+  // TODO: 调研 Chromium 内部提供的监听View在窗口间移动的方案
+  // AddedToWidget();
+  // GetWidget()
 }
 
 void AlohaBrowserContentView::ShowSettingsMenu() {
@@ -279,11 +248,36 @@ void AlohaBrowserContentView::ShowSettingsMenu() {
 }
 
 void AlohaBrowserContentView::Close() {
-  // 检查是否处于独立窗口：
-  if (owned_widget_delegate_view_ != origin_widget_delegate_view_) {
-    owned_widget_delegate_view_->GetWidget()->Close();
+  // 如果处于独立窗口需要关闭独立窗口将 BrowserContentView 归还给主端窗口
+  if (!CanOpenInNewWidget()) {
+    auto* owned_widget_delegate_view = GetWidget();
+    if (owned_widget_delegate_view) {
+      owned_widget_delegate_view->Close();
+    }
   }
   origin_widget_delegate_view_->CloseBrowserContentView(this);
+}
+
+void AlohaBrowserContentView::SetCanOpenInNewWidget(bool can_open_in_new_tab) {
+  can_open_in_new_tab_ = can_open_in_new_tab;
+  open_view_in_new_window_btn_->SetVisible(can_open_in_new_tab);
+}
+
+bool AlohaBrowserContentView::CanOpenInNewWidget() {
+  return can_open_in_new_tab_;
+}
+
+void AlohaBrowserContentView::AddChildWidget(
+    base::WeakPtr<views::Widget> widget) {
+  child_widgets_.push_back(std::move(widget));
+}
+
+void AlohaBrowserContentView::CloseChildWidgets() {
+  for (auto& widget : child_widgets_) {
+    if (widget) {
+      widget->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+    }
+  }
 }
 
 WebAppContentView::WebAppContentView(const GURL& init_url,
@@ -292,11 +286,20 @@ WebAppContentView::WebAppContentView(const GURL& init_url,
 
 WebAppContentView::~WebAppContentView() = default;
 
+AlohaWidgetDelegateView* CreateAlohaWidgetDelegateView() {
+  return new SimpleWidgetDelegateView();
+}
+
 void WebAppContentView::Init() {
   // 添加 icon button
   auto open_view_in_new_window_btn = views::ImageButton::CreateIconButton(
-      base::BindRepeating(&AlohaBrowserContentView::ShowInIndependentWindow,
-                          base::Unretained(this)),
+      base::BindRepeating(
+          &AlohaWidgetDelegateView::ShowBrowserContentViewInNewWindow,
+          base::Unretained(origin_widget_delegate_view_),
+          base::Unretained(this),
+          base::BindRepeating([]() -> AlohaWidgetDelegateView* {
+            return new SimpleWidgetDelegateView();
+          })),
       aloha::kMoveGroupToNewWindowRefreshIcon, u"open in new window");
   open_view_in_new_window_btn_ = open_view_in_new_window_btn.get();
   sub_views_.top_bar_right_view->AddChildView(
@@ -345,10 +348,14 @@ WebSiteContentView::WebSiteContentView(const GURL& init_url,
 WebSiteContentView::~WebSiteContentView() = default;
 
 void WebSiteContentView::Init() {
-  // 添加 icon button
   auto open_view_in_new_window_btn = views::ImageButton::CreateIconButton(
-      base::BindRepeating(&AlohaBrowserContentView::ShowInIndependentWindow,
-                          base::Unretained(this)),
+      base::BindRepeating(
+          &AlohaWidgetDelegateView::ShowBrowserContentViewInNewWindow,
+          base::Unretained(origin_widget_delegate_view_),
+          base::Unretained(this),
+          base::BindRepeating([]() -> AlohaWidgetDelegateView* {
+            return new SimpleWidgetDelegateView();
+          })),
       aloha::kMoveGroupToNewWindowRefreshIcon, u"open in new window");
   open_view_in_new_window_btn_ = open_view_in_new_window_btn.get();
   sub_views_.top_bar_right_view->AddChildView(

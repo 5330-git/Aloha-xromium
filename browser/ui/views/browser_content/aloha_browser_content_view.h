@@ -1,8 +1,9 @@
 #ifndef _ALOHA_BROWSER_UI_VIEWS_ALOHA_BROWSER_CONTENT_VIEW_H_
-#define _ALOHA_BROWSER_UI_VIEWS_ALOHA_BROWSER_CONTENT_VIEW_H_ 
+#define _ALOHA_BROWSER_UI_VIEWS_ALOHA_BROWSER_CONTENT_VIEW_H_
 
 #include <memory>
 
+#include "aloha/browser/ui/views/browser_content/public/browser_content_view.h"
 #include "aloha/browser/ui/views/widget/widget_delegate_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -10,11 +11,11 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace aloha {
 
-class AlohaBrowserContentView : public views::View,
-                                public content::WebContentsObserver {
+class AlohaBrowserContentView : public BrowserContentView {
  public:
   static constexpr char kAlohaHomeURL[] =
       "file:///D:/codes/build-chromium/chromium/src/aloha/resources/browser/"
@@ -31,31 +32,29 @@ class AlohaBrowserContentView : public views::View,
                           AlohaWidgetDelegateView* origin_widget_delegate_view);
   ~AlohaBrowserContentView() override;
 
-  // AlohaBrowserContentView
-  virtual void Init();
-  // virtual void PaintTopBarView();
-
-  virtual void ShowInIndependentWindow();
-  virtual void MoveBackToTabFromIndependentWindow();
-  virtual void ReloadContents();
-  virtual void NavigateForward();
-  virtual void NavigateBack();
-  virtual void NavigateHome();
-  virtual void CopyLink();
-  virtual void OpenDevtoolsAndInspect();
-  virtual void ShowSettingsMenu();
-  virtual void Close();
-
+  // BrowserContentView
+  void Init() override;
+  void ReloadContents() override;
+  void NavigateForward() override;
+  void NavigateBack() override;
+  void NavigateHome() override;
+  void CopyLink() override;
+  void OpenDevtoolsAndInspect() override;
+  void ShowSettingsMenu() override;
+  void Close() override;
+  void SetCanOpenInNewWidget(bool can_open_in_new_tab) override;
+  bool CanOpenInNewWidget() override;
+  void AddChildWidget(base::WeakPtr<views::Widget> widget) override;
+  void CloseChildWidgets() override;
 
  protected:
   // 用于定义整个Views各个部分视图的容器
-  virtual std::unique_ptr<views::View> GetContentContainerView();
+  std::unique_ptr<views::View> GetContentContainerView() override;
 
-  // AlohaBrowserContentView 的生命周期由 AlohaWidgetDelegateView
-  // 持有，因此这里可以使用 raw_ptr AlohaBrowserContentView
-  // 可能在多个窗口（Widget）中使用
-  base::raw_ptr<AlohaWidgetDelegateView> owned_widget_delegate_view_;
   base::raw_ptr<AlohaWidgetDelegateView> origin_widget_delegate_view_;
+
+  bool can_open_in_new_tab_ = false;
+  std::vector<base::WeakPtr<views::Widget>> child_widgets_;
 
   base::raw_ptr<views::Button> open_view_in_new_window_btn_;
   base::raw_ptr<views::Button> settings_btn_;
@@ -65,7 +64,7 @@ class AlohaBrowserContentView : public views::View,
 
   base::raw_ptr<DevToolsFrontend> devtools_frontend_ = nullptr;
   // TODO(yeyun.anton): 定制Devtools 的界面
-  base::raw_ptr<views::View> devtools_view_ = nullptr;
+  base::raw_ptr<BrowserContentView> devtools_view_ = nullptr;
   SubViews sub_views_;
   const GURL init_url_;
 };

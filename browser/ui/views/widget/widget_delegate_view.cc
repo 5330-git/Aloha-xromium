@@ -3,11 +3,12 @@
 #include <memory>
 #include <utility>
 
-#include "aloha/browser/ui/views/aloha_browser_content_view.h"
+#include "aloha/browser/ui/views/browser_content/aloha_browser_content_view.h"
+#include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "aloha/grit/aloha_resources.h"
 #include "aloha/resources/vector_icons/vector_icons.h"
-#include "aloha/views/controls/tabbed_pane/tabbed_pane.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -43,7 +44,7 @@
 namespace aloha {
 // namespace {
 base::raw_ptr<content::BrowserContext> default_browser_context_ = nullptr;
-base::raw_ptr<NativeWidgetDelegateView> g_instance_ = nullptr;
+base::raw_ptr<MainWidgetDelegateView> g_instance_ = nullptr;
 // }  // namespace
 
 void SetDefaultBrowserContext(content::BrowserContext* browser_context) {
@@ -66,60 +67,86 @@ std::u16string AlohaWidgetDelegateView::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_ALOHA_WINDOW_TITLE);
 }
 
+void AlohaWidgetDelegateView::ShowBrowserContentViewInNewWindow(
+    aloha::BrowserContentView* /*browser_content_view*/,
+    base::RepeatingCallback<AlohaWidgetDelegateView*(void)> /*creator*/) {}
+
 AlohaWidgetDelegateView::~AlohaWidgetDelegateView() {}
 
-IndependentWidgetDelegateView::IndependentWidgetDelegateView()
+SimpleWidgetDelegateView* SimpleWidgetDelegateView::Create() {
+  return new SimpleWidgetDelegateView();
+}
+
+SimpleWidgetDelegateView::SimpleWidgetDelegateView()
     : name_("Aloha Indepentent Window") {
   SetHasWindowSizeControls(true);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
-IndependentWidgetDelegateView::~IndependentWidgetDelegateView() {}
+SimpleWidgetDelegateView::~SimpleWidgetDelegateView() {}
 
-void IndependentWidgetDelegateView::AddBrowserContentView(
+void SimpleWidgetDelegateView::AddBrowserContentView(
     std::string name,
-    std::unique_ptr<views::View> content_view) {
+    std::unique_ptr<aloha::BrowserContentView> content_view) {
   name_ = name;
   SetTitle(base::UTF8ToUTF16(name));
   content_view_ = AddChildView(std::move(content_view));
 }
 
-std::unique_ptr<views::View>
-IndependentWidgetDelegateView::MoveOutBrowserContentView(
-    views::View* content_view) {
+std::unique_ptr<aloha::BrowserContentView>
+SimpleWidgetDelegateView::MoveOutBrowserContentView(
+    aloha::BrowserContentView* content_view) {
+  if (!content_view_) {
+    return nullptr;
+  }
+  CHECK(content_view == content_view_);
+  content_view_ = nullptr;
   return RemoveChildViewT(content_view);
 }
 
-std::unique_ptr<views::View>
-IndependentWidgetDelegateView::CloseBrowserContentView(
-    views::View* content_view) {
-  return MoveOutBrowserContentView(content_view);
+void SimpleWidgetDelegateView::CloseBrowserContentView(
+    aloha::BrowserContentView* content_view) {
+  MoveOutBrowserContentView(content_view);
 }
 
-std::u16string IndependentWidgetDelegateView::GetWindowTitle() const {
+std::u16string SimpleWidgetDelegateView::GetWindowTitle() const {
   return base::UTF8ToUTF16(name_);
 }
 
-gfx::Size IndependentWidgetDelegateView::GetMinimumSize() const {
+gfx::Size SimpleWidgetDelegateView::GetMinimumSize() const {
   return gfx::Size(1000, 700);
 }
 
-gfx::Size IndependentWidgetDelegateView::CalculatePreferredSize(
+gfx::Size SimpleWidgetDelegateView::CalculatePreferredSize(
     const views::SizeBounds& /*available_size*/) const {
   gfx::Size size(1000, 800);
   return size;
 }
 
-NativeWidgetDelegateView* NativeWidgetDelegateView::instance() {
+MainWidgetDelegateView* MainWidgetDelegateView::Create() {
+  return new MainWidgetDelegateView();
+}
+
+MainWidgetDelegateView::BrowserContentViewInfo::BrowserContentViewInfo() =
+    default;
+
+MainWidgetDelegateView::BrowserContentViewInfo::~BrowserContentViewInfo() =
+    default;
+
+MainWidgetDelegateView::BrowserContentViewInfo::BrowserContentViewInfo(
+    BrowserContentViewInfo&& other) {
+  independent_window = std::move(other.independent_window);
+  related_tab = other.related_tab;
+  other.related_tab = nullptr;
+}
+
+MainWidgetDelegateView* MainWidgetDelegateView::instance() {
   return g_instance_;
 }
 
-NativeWidgetDelegateView::NativeWidgetDelegateView() {
+MainWidgetDelegateView::MainWidgetDelegateView() {
   web_contents_delegate_ = std::make_unique<AlohaWebContentDelegate>(
       aloha::GetDefaultBrowserContext(), this);
-  // views::Widget::InitParams params(
-  //     views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-  //     views::Widget::InitParams::TYPE_WINDOW);
 
   g_instance_ = this;
   SetHasWindowSizeControls(true);
@@ -152,9 +179,9 @@ NativeWidgetDelegateView::NativeWidgetDelegateView() {
   // LOG(INFO) << view;
 }
 
-void NativeWidgetDelegateView::AddBrowserContentView(
+void MainWidgetDelegateView::AddBrowserContentView(
     std::string name,
-    std::unique_ptr<views::View> content_view) {
+    std::unique_ptr<aloha::BrowserContentView> content_view) {
   // 检查是否是被移出去的窗口
   auto tab_view_iter = views_in_independent_window_.find(content_view.get());
   if (tab_view_iter != views_in_independent_window_.end()) {
@@ -166,13 +193,20 @@ void NativeWidgetDelegateView::AddBrowserContentView(
     tab_view->SetContents(tab_view_iter->first);
     return;
   }
+  content_view->SetCanOpenInNewWidget(true);
   tabbed_pane_->AddTab(base::UTF8ToUTF16(name), std::move(content_view));
   size_t count = tabbed_pane_->GetTabCount();
   tabbed_pane_->SelectTabAt(count - 1);
+
+  BrowserContentViewInfo info;
+  info.independent_window = nullptr;
+  info.related_tab = tabbed_pane_->GetTabAt(count - 1);
+  browser_content_views.emplace(info.related_tab->contents(), std::move(info));
 }
 
-std::unique_ptr<views::View>
-NativeWidgetDelegateView::MoveOutBrowserContentView(views::View* content_view) {
+std::unique_ptr<aloha::BrowserContentView>
+MainWidgetDelegateView::MoveOutBrowserContentView(
+    aloha::BrowserContentView* content_view) {
   if (content_view) {
     // 找到对应的 Tab
     for (size_t i = 0; i < tabbed_pane_->GetTabCount(); i++) {
@@ -195,20 +229,64 @@ NativeWidgetDelegateView::MoveOutBrowserContentView(views::View* content_view) {
   return nullptr;
 }
 
-std::unique_ptr<views::View> NativeWidgetDelegateView::CloseBrowserContentView(
-    views::View* content_view) {
-  auto content_view_uniptr = MoveOutBrowserContentView(content_view);
-  if (content_view) {
-    auto tab_view_iter = views_in_independent_window_.find(content_view);
-    CHECK(tab_view_iter != views_in_independent_window_.end());
-    auto tab_view = tab_view_iter->second;
-    tabbed_pane_->RemoveTab(tab_view);
-    return content_view_uniptr;
-  }
-  return nullptr;
+void MainWidgetDelegateView::CloseBrowserContentView(
+    aloha::BrowserContentView* content_view) {
+  auto iter = browser_content_views.find(content_view);
+  CHECK(iter != browser_content_views.end());
+  // 如果时独立窗口，在此处会随着 widget
+  // 的销毁而销毁，如果在主窗口中则在后面移除Tab 时销毁
+  AlohaTabbedPaneTab* tab_view = iter->second.related_tab;
+  browser_content_views.erase(iter);
+  tabbed_pane_->RemoveTab(tab_view);
 }
 
-gfx::Size NativeWidgetDelegateView::CalculatePreferredSize(
+void MainWidgetDelegateView::ShowBrowserContentViewInNewWindow(
+    aloha::BrowserContentView* browser_content_view,
+    base::RepeatingCallback<AlohaWidgetDelegateView*(void)>
+        widget_delegate_view_creator) {
+  // 查找对应的tab
+  auto browser_content_view_ownership =
+      MoveOutBrowserContentView(browser_content_view);
+  if (!browser_content_view_ownership) {
+    return;
+  }
+  auto widget_delegate_view = widget_delegate_view_creator.Run();
+  widget_delegate_view->AddBrowserContentView(
+      "Aloha", std::move(browser_content_view_ownership));
+  browser_content_view->SetCanOpenInNewWidget(false);
+
+  // 持有独立窗口的 widget
+  auto* child_widget = new views::Widget();
+
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
+  params.delegate = widget_delegate_view;
+
+  child_widget->Init(std::move(params));
+  child_widget->Show();
+
+  // 为独立窗口注册回调，让其关闭时归还 BrowserContentView
+  widget_delegate_view->RegisterWindowWillCloseCallback(base::BindOnce(
+      [](MainWidgetDelegateView* main_delegate, AlohaWidgetDelegateView* self,
+         aloha::BrowserContentView* content_view) {
+        auto ownership = self->MoveOutBrowserContentView(content_view);
+        if (ownership) {
+          ownership->SetCanOpenInNewWidget(true);
+          main_delegate->AddBrowserContentView("", std::move(ownership));
+        }
+      },
+      base::Unretained(this), base::Unretained(widget_delegate_view),
+      browser_content_view));
+
+  // 为主窗口关闭设置回调，确保独立窗口也关闭
+  // 回调可能有滞后性，因此使用弱指针
+  RegisterWindowWillCloseCallback(
+      base::BindOnce(&views::Widget::CloseWithReason,
+                     widget_delegate_view->GetWidget()->GetWeakPtr(),
+                     views::Widget::ClosedReason::kCloseButtonClicked));
+}
+
+gfx::Size MainWidgetDelegateView::CalculatePreferredSize(
     const views::SizeBounds& /*available_size*/) const {
   gfx::Size size(1000, 800);
   for (size_t i = 0; i < tabbed_pane_->GetTabCount(); i++) {
@@ -219,9 +297,9 @@ gfx::Size NativeWidgetDelegateView::CalculatePreferredSize(
   return size;
 }
 
-void NativeWidgetDelegateView::TabSelectedAt(int index) {
+void MainWidgetDelegateView::TabSelectedAt(int index) {
   // status_label_->SetVisible(false);
 }
-NativeWidgetDelegateView::~NativeWidgetDelegateView() {}
+MainWidgetDelegateView::~MainWidgetDelegateView() {}
 
 }  // namespace aloha

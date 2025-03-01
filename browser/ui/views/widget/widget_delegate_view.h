@@ -8,8 +8,9 @@
 
 #include "aloha/browser/devtools/devtools_frontend.h"
 #include "aloha/browser/ui/menu/setting_menu_model.h"
+#include "aloha/browser/ui/views/browser_content/public/browser_content_view.h"
+#include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "aloha/grit/aloha_resources.h"
-#include "aloha/views/controls/tabbed_pane/tabbed_pane.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -17,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/win/windows_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents.h"
@@ -67,12 +69,16 @@ class AlohaWidgetDelegateView : public views::WidgetDelegateView {
   // AlohaWidgetDelegateView
   virtual void AddBrowserContentView(
       std::string name,
-      std::unique_ptr<views::View> content_view) = 0;
-  virtual std::unique_ptr<views::View> MoveOutBrowserContentView(
-      views::View* content_view) = 0;
+      std::unique_ptr<aloha::BrowserContentView> content_view) = 0;
+  virtual std::unique_ptr<aloha::BrowserContentView> MoveOutBrowserContentView(
+      aloha::BrowserContentView* content_view) = 0;
 
-  virtual std::unique_ptr<views::View> CloseBrowserContentView(
-      views::View* content_view) = 0;
+  virtual void CloseBrowserContentView(
+      aloha::BrowserContentView* content_view) = 0;
+  virtual void ShowBrowserContentViewInNewWindow(
+      aloha::BrowserContentView* browser_content_view,
+      base::RepeatingCallback<AlohaWidgetDelegateView*(void)>
+          widget_delegate_view_creator);
 
   AlohaWebContentDelegate* web_contents_delegate() const {
     return web_contents_delegate_.get();
@@ -85,37 +91,53 @@ class AlohaWidgetDelegateView : public views::WidgetDelegateView {
 };
 
 // Aloha 中用于展示独立View的窗口
-class IndependentWidgetDelegateView : public AlohaWidgetDelegateView {
+class SimpleWidgetDelegateView : public AlohaWidgetDelegateView {
  public:
-  IndependentWidgetDelegateView();
+  SimpleWidgetDelegateView();
+  static SimpleWidgetDelegateView* Create();
   gfx::Size GetMinimumSize() const override;
-  ~IndependentWidgetDelegateView() override;
+  ~SimpleWidgetDelegateView() override;
   std::u16string GetWindowTitle() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& /*available_size*/) const override;
 
   void AddBrowserContentView(
       std::string name,
-      std::unique_ptr<views::View> content_view) override;
-  std::unique_ptr<views::View> MoveOutBrowserContentView(
-      views::View* content_view) override;
-  std::unique_ptr<views::View> CloseBrowserContentView(
-      views::View* content_view) override;
+      std::unique_ptr<aloha::BrowserContentView> content_view) override;
+  std::unique_ptr<aloha::BrowserContentView> MoveOutBrowserContentView(
+      aloha::BrowserContentView* content_view) override;
+  void CloseBrowserContentView(
+      aloha::BrowserContentView* content_view) override;
 
  protected:
-  base::raw_ptr<views::View> content_view_;
+  base::raw_ptr<aloha::BrowserContentView> content_view_;
   std::string name_;
 };
 
 // 参考 ui\views\examples\examples_window.cc 实现
 // 希望以单例的形式展示 (临时方案)
 // 最顶层的 View 的展示相关
-class NativeWidgetDelegateView : public AlohaWidgetDelegateView,
-                                 public views::TabbedPaneListener {
+class MainWidgetDelegateView : public AlohaWidgetDelegateView,
+                               public views::TabbedPaneListener {
  public:
-  NativeWidgetDelegateView();
+  struct BrowserContentViewInfo {
+    // 独立窗口的widget
+    std::unique_ptr<views::Widget> independent_window = nullptr;
+    // 指向主窗口的 TabView
+    base::raw_ptr<AlohaTabbedPaneTab> related_tab = nullptr;
+    BrowserContentViewInfo();
+    ~BrowserContentViewInfo();
+    BrowserContentViewInfo(BrowserContentViewInfo&& other);
+    BrowserContentViewInfo(const BrowserContentViewInfo& other) = delete;
+    BrowserContentViewInfo& operator=(const BrowserContentViewInfo& other) =
+        delete;
+    BrowserContentViewInfo& operator=(BrowserContentViewInfo&& other) = default;
+  };
 
-  ~NativeWidgetDelegateView() override;
+  MainWidgetDelegateView();
+  static MainWidgetDelegateView* Create();
+
+  ~MainWidgetDelegateView() override;
 
   // views::TabbedPaneListener
   void TabSelectedAt(int index) override;
@@ -125,20 +147,25 @@ class NativeWidgetDelegateView : public AlohaWidgetDelegateView,
   // AlohaWidgetDelegateView
   void AddBrowserContentView(
       std::string name,
-      std::unique_ptr<views::View> content_view) override;
+      std::unique_ptr<aloha::BrowserContentView> content_view) override;
 
-  std::unique_ptr<views::View> MoveOutBrowserContentView(
-      views::View* content_view) override;
+  std::unique_ptr<aloha::BrowserContentView> MoveOutBrowserContentView(
+      aloha::BrowserContentView* content_view) override;
 
-  std::unique_ptr<views::View> CloseBrowserContentView(
-      views::View* content_view) override;
+  void CloseBrowserContentView(
+      aloha::BrowserContentView* content_view) override;
 
-  // NativeWidgetDelegateView
+  // MainWidgetDelegateView
   AlohaTabbedPane* GetTabbedPane() const { return tabbed_pane_; }
+
+  void ShowBrowserContentViewInNewWindow(
+      aloha::BrowserContentView* browser_content_view,
+      base::RepeatingCallback<AlohaWidgetDelegateView*(void)>
+          widget_delegate_view_creator) override;
 
   // static
   // 注意在多个模块中定义可能导致全局变量的问题
-  static NativeWidgetDelegateView* instance();
+  static MainWidgetDelegateView* instance();
 
  private:
   base::raw_ptr<AlohaTabbedPane> tabbed_pane_ = nullptr;
@@ -147,6 +174,9 @@ class NativeWidgetDelegateView : public AlohaWidgetDelegateView,
   // content_view --> tab_view
   std::unordered_map<views::View*, AlohaTabbedPaneTab*>
       views_in_independent_window_;
+
+  std::unordered_map<views::View*, BrowserContentViewInfo>
+      browser_content_views;
 };
 
 }  // namespace aloha

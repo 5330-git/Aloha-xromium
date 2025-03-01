@@ -4,7 +4,6 @@
 #include <string>
 
 #include "aloha/browser/devtools/devtools_frontend.h"
-#include "aloha_web_contents_view_delegate_views.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"

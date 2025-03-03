@@ -5,6 +5,7 @@
 #include "aloha/app/main_delegate.h"
 // #include "aloha/browser/ui/native/widget_delegate_view.h"
 #include "aloha/browser/ui/views/widget/widget_delegate_view.h"
+#include "aloha/grit/aloha_resources.h"
 #include "aloha/views_content_client/views_content_client.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -17,6 +18,7 @@
 #include "content/public/app/content_main.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/views/widget/widget.h"
@@ -75,6 +77,7 @@ void CreateAndShowMainWindow(aloha::ViewsContentClient* views_content_client,
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ALOHA_WEBSHELL_TITLE));
   // 移除系统的默认样式，以添加我们自己的窗口样式
   // params.remove_standard_frame = true;
+
   aloha_main_widget->Init(std::move(params));
   aloha_main_widget->Show();
   // These lines serve no purpose other than to introduce an explicit content

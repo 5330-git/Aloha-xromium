@@ -1,0 +1,2 @@
+#define IDR_MAINFRAME 101
+IDR_MAINFRAME ICON "app_icons/aloha.ico"

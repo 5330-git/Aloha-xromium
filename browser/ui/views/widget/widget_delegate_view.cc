@@ -38,6 +38,7 @@
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 #include "widget_delegate_view.h"
 
@@ -57,7 +58,10 @@ content::BrowserContext* GetDefaultBrowserContext() {
   return default_browser_context_;
 }
 
-AlohaWidgetDelegateView::AlohaWidgetDelegateView() = default;
+AlohaWidgetDelegateView::AlohaWidgetDelegateView() {
+  SetAppIcon(ui::ImageModel::FromResourceId(IDR_ALOHA_ICON));
+  SetIcon(ui::ImageModel::FromResourceId(IDR_ALOHA_ICON));
+}
 
 gfx::Size AlohaWidgetDelegateView::GetMinimumSize() const {
   return gfx::Size(700, 700);

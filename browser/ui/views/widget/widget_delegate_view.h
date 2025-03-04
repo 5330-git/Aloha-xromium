@@ -58,6 +58,7 @@ class AlohaWebAppView;
 content::BrowserContext* GetDefaultBrowserContext();
 void SetDefaultBrowserContext(content::BrowserContext* browser_context);
 
+// TODO(yeyun.anton): 将 AlohaWidgetDelegateView 移动到 public 下
 // 参考 ui\views\examples\examples_window.cc 实现
 // 最顶层的 View 的展示相关
 class AlohaWidgetDelegateView : public views::WidgetDelegateView {

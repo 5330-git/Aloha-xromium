@@ -1,4 +1,4 @@
-![Aloha logo](resources/app_icons/aloha.ico)**Aloha - Xromium**
+# ![Aloha logo](resources/app_icons/aloha.ico)**Aloha - Xromium**
 
 ## 简介
 

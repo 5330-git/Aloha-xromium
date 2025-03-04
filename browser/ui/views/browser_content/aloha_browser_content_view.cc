@@ -3,12 +3,16 @@
 #include <memory>
 #include <utility>
 
+#include "aloha/browser/ui/color/color_ids.h"
+#include "aloha/grit/aloha_resources.h"
 #include "aloha/resources/vector_icons/vector_icons.h"
 #include "aloha_browser_content_view.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/favicon/content/content_favicon_driver.h"
+#include "components/favicon/core/favicon_driver.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/color/color_id.h"
@@ -19,6 +23,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
+
 // #include "widget/widget_delegate_view.h"
 
 namespace aloha {
@@ -87,7 +92,7 @@ AlohaBrowserContentView::GetContentContainerView() {
                       views::BoxLayout::CrossAxisAlignment::kCenter)
                   .SetDefaultFlex(1)
                   .SetBackground(views::CreateThemedSolidBackground(
-                      ui::kColorSysHeaderContainer))
+                      theme::light::kColorLightBrowserBackground))
                   .AddChildren(
                       views::Builder<views::BoxLayoutView>()
                           .SetBetweenChildSpacing(10)
@@ -279,6 +284,23 @@ void AlohaBrowserContentView::CloseChildWidgets() {
     }
   }
 }
+
+ui::ImageModel AlohaBrowserContentView::GetFavicon() {
+  favicon::FaviconDriver* favicon_driver =
+      favicon::ContentFaviconDriver::FromWebContents(sub_views_.webview->GetWebContents());
+  if (favicon_driver) {
+    gfx::Image favicon_image = favicon_driver->GetFavicon();
+    return ui::ImageModel::FromImage(favicon_image);
+  }
+  return ui::ImageModel::FromResourceId(IDR_ALOHA_ICON);
+}
+void AlohaBrowserContentView::DidUpdateFaviconURL(
+  content::RenderFrameHost* render_frame_host,
+  const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+    for(auto& candidate : candidates) {
+      LOG(INFO) << "Favicon URL: " << candidate->icon_url.spec(); 
+    }
+  }
 
 WebAppContentView::WebAppContentView(const GURL& init_url,
                                      AlohaWidgetDelegateView* delegate)

@@ -12,8 +12,10 @@ aggregate_vector_icons("aloha_vector_icons") {
     "ksv_reload.icon",
     "link.icon",
     "move_group_to_new_window_refresh.icon",
+    "move_to_group.icon",
     "navigate_home.icon",
     "open_devtools.icon",
+    "pin.icon",
   ]
 }
 

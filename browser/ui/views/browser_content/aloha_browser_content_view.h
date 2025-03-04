@@ -7,6 +7,7 @@
 #include "aloha/browser/ui/views/widget/widget_delegate_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
@@ -46,6 +47,12 @@ class AlohaBrowserContentView : public BrowserContentView {
   bool CanOpenInNewWidget() override;
   void AddChildWidget(base::WeakPtr<views::Widget> widget) override;
   void CloseChildWidgets() override;
+  ui::ImageModel GetFavicon() override;
+
+  // WebContentsObserver
+  void DidUpdateFaviconURL(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
 
  protected:
   // 用于定义整个Views各个部分视图的容器

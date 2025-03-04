@@ -5,7 +5,7 @@
         <el-row justify="center" :gutter="20">
           <el-col :xs="10" :sm="9" :md="7" :lg="4" :push="2">
             <div>
-              <img src="/chromium_logo.png" style="width: 100px; height: 100px;">
+              <img src="/aloha.png" style="width: 100px; height: 100px;">
             </div>
           </el-col>
           <el-col :xs="8" :sm="5" :md="5" :lg="9" :pull="2">

@@ -1,4 +1,4 @@
-// // 基于 ui\views\controls\tabbed_pane\tabbed_pane.h 进行改动
+// 基于 ui\views\controls\tabbed_pane\tabbed_pane.h 拆分和改动
 
 #ifndef ALOHA_UI_VIEWS_CONTROLS_TABBED_PANE_TABBED_PANE_H_
 #define ALOHA_UI_VIEWS_CONTROLS_TABBED_PANE_TABBED_PANE_H_
@@ -7,13 +7,20 @@
 #include <string>
 #include <utility>
 
+#include "aloha/browser/ui/menu/tab_menu_model.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/resize_area_delegate.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
+#include "ui/views/drag_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -29,7 +36,8 @@ class AlohaTabbedPaneTabStrip;
 // associated view is displayed.
 // Support for horizontal-highlight and vertical-border modes is limited and
 // may require additional polish.
-class AlohaTabbedPane : public views::FlexLayoutView {
+class AlohaTabbedPane : public views::FlexLayoutView,
+                        public views::DragController {
   METADATA_HEADER(AlohaTabbedPane, FlexLayoutView)
 
  public:
@@ -111,7 +119,27 @@ class AlohaTabbedPane : public views::FlexLayoutView {
   // std::unique_ptr<views::View> RemoveAndGetContentsAt(size_t index);
 
   AlohaTabbedPaneTabStrip* GetTabStrip() { return tab_strip_; }
-  views::View* GetContents() { return contents_; }
+  const views::View* GetContentsContainer() const { return contents_container_; }
+  views::View* GetContentsContainer() { return contents_container_; }
+
+  // DragController:
+  // 将注册到tab上，这样tab上的拖拽事件就可以分发到TabPane上
+  void WriteDragDataForView(views::View* sender,
+                            const gfx::Point& press_pt,
+                            ui::OSExchangeData* data) override;
+  int GetDragOperationsForView(views::View* sender,
+                               const gfx::Point& p) override;
+  bool CanStartDragForView(views::View* sender,
+                           const gfx::Point& press_pt,
+                           const gfx::Point& p) override;
+  void OnWillStartDragForView(views::View* dragged_view) override;
+
+  // Drag 相关，自定义
+  // 设置
+  void SetDropTarget(base::WeakPtr<AlohaTabbedPaneTab> tab, bool before = true);
+  base::WeakPtr<AlohaTabbedPaneTab> GetDropTarget();
+  void HandleDrop(AlohaTabbedPaneTab* dropped_tab);
+
 
  private:
   friend class FocusTraversalTest;
@@ -152,146 +180,15 @@ class AlohaTabbedPane : public views::FlexLayoutView {
   // correspond to match each AlohaTabbedPaneTab with its respective content
   // View.
   raw_ptr<AlohaTabbedPaneTabStrip> tab_strip_ = nullptr;
-  raw_ptr<View> contents_ = nullptr;
+  raw_ptr<View> contents_container_ = nullptr;
 
   // The scroll view containing the tab strip, if |scrollable| is specified on
   // creation.
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
-};
 
-// The tab view shown in the tab strip.
-class AlohaTabbedPaneTab : public views::View {
-  METADATA_HEADER(AlohaTabbedPaneTab, views::View)
-
- public:
-  AlohaTabbedPaneTab(AlohaTabbedPane* tabbed_pane,
-                     const std::u16string& title,
-                     View* contents);
-
-  AlohaTabbedPaneTab(const AlohaTabbedPaneTab&) = delete;
-  AlohaTabbedPaneTab& operator=(const AlohaTabbedPaneTab&) = delete;
-
-  ~AlohaTabbedPaneTab() override;
-
-  views::View* contents() const { return contents_; }
-
-  void SetContents(View* contents) { contents_ = contents; }
-
-  bool selected() const { return contents_->GetVisible(); }
-  void SetSelected(bool selected);
-
-  const std::u16string& GetTitleText() const;
-  void SetTitleText(const std::u16string& text);
-
-  // Overridden from View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
-  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
-  void OnFocus() override;
-  void OnBlur() override;
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
-  void OnThemeChanged() override;
-
- private:
-  enum class State {
-    kInactive,
-    kActive,
-    kHovered,
-  };
-
-  void SetState(State state);
-
-  // Called whenever |state_| changes.
-  void OnStateChanged();
-
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override;
-
-  void UpdatePreferredTitleWidth();
-  void UpdateTitleColor();
-
-  void UpdateAccessibleName();
-  void UpdateAccessibleSelection();
-
-  raw_ptr<AlohaTabbedPane> tabbed_pane_;
-  raw_ptr<views::Label> title_ = nullptr;
-  int preferred_title_width_;
-  State state_ = State::kActive;
-  // The content view associated with this tab.
-  raw_ptr<View> contents_;
-
-  base::CallbackListSubscription title_text_changed_callback_;
-};
-
-// The tab strip shown above/left of the tab contents.
-class AlohaTabbedPaneTabStrip : public views::View,
-                                public gfx::AnimationDelegate {
-  METADATA_HEADER(AlohaTabbedPaneTabStrip, views::View)
-
- public:
-  // The return value of GetSelectedTabIndex() when no tab is selected.
-  static constexpr size_t kNoSelectedTab = static_cast<size_t>(-1);
-
-  AlohaTabbedPaneTabStrip(AlohaTabbedPane::Orientation orientation,
-                          AlohaTabbedPane::TabStripStyle style);
-
-  AlohaTabbedPaneTabStrip(const AlohaTabbedPaneTabStrip&) = delete;
-  AlohaTabbedPaneTabStrip& operator=(const AlohaTabbedPaneTabStrip&) = delete;
-
-  ~AlohaTabbedPaneTabStrip() override;
-
-  // AnimationDelegate:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
-
-  // Called by AlohaTabbedPaneTabStrip when the selected tab changes. This
-  // function is only called if |from_tab| is not null, i.e., there was a
-  // previously selected tab.
-  void OnSelectedTabChanged(AlohaTabbedPaneTab* from_tab,
-                            AlohaTabbedPaneTab* to_tab,
-                            bool animate = true);
-
-  AlohaTabbedPaneTab* GetSelectedTab() const;
-  AlohaTabbedPaneTab* GetTabAtDeltaFromSelected(int delta) const;
-  AlohaTabbedPaneTab* GetTabAtIndex(size_t index) const;
-  size_t GetSelectedTabIndex() const;
-
-  AlohaTabbedPane::Orientation GetOrientation() const;
-
-  AlohaTabbedPane::TabStripStyle GetStyle() const;
-
- protected:
-  // View:
-  void OnPaintBorder(gfx::Canvas* canvas) override;
-
- private:
-  struct Coordinates {
-    int start, end;
-  };
-
-  // The orientation of the tab alignment.
-  const AlohaTabbedPane::Orientation orientation_;
-
-  // The style of the tab strip.
-  const AlohaTabbedPane::TabStripStyle style_;
-
-  // Animations for expanding and contracting the selection bar. When changing
-  // selections, the selection bar first grows to encompass both the old and new
-  // selections, then shrinks to encompass only the new selection. The rates of
-  // expansion and contraction each follow the cubic bezier curves used in
-  // gfx::Tween; see TabStrip::OnPaintBorder for details.
-  std::unique_ptr<gfx::LinearAnimation> expand_animation_ =
-      std::make_unique<gfx::LinearAnimation>(this);
-  std::unique_ptr<gfx::LinearAnimation> contract_animation_ =
-      std::make_unique<gfx::LinearAnimation>(this);
-
-  // The x-coordinate ranges of the old selection and the new selection.
-  Coordinates animating_from_;
-  Coordinates animating_to_;
+  // Tab 拖拽和释放 相关
+  base::WeakPtr<AlohaTabbedPaneTab> drop_target_;
+  bool drop_before_ = true;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, AlohaTabbedPane, views::FlexLayoutView)

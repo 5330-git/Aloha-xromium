@@ -1,10 +1,14 @@
 #include "aloha/browser/ui/views/widget/widget_delegate_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "aloha/browser/ui/color/color_ids.h"
 #include "aloha/browser/ui/views/browser_content/aloha_browser_content_view.h"
 #include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane_tab.h"
+#include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane_tab_strip.h"
 #include "aloha/grit/aloha_resources.h"
 #include "aloha/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
@@ -21,6 +25,8 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -64,7 +70,7 @@ AlohaWidgetDelegateView::AlohaWidgetDelegateView() {
 }
 
 gfx::Size AlohaWidgetDelegateView::GetMinimumSize() const {
-  return gfx::Size(700, 700);
+  return gfx::Size(100, 100);
 }
 
 std::u16string AlohaWidgetDelegateView::GetWindowTitle() const {
@@ -154,33 +160,28 @@ MainWidgetDelegateView::MainWidgetDelegateView() {
 
   g_instance_ = this;
   SetHasWindowSizeControls(true);
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorSysHeaderContainer));
+  SetBackground(views::CreateThemedSolidBackground(
+      theme::light::kColorLightBrowserBackground));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(0)));
   auto tabbed_pane = std::make_unique<AlohaTabbedPane>(
       AlohaTabbedPane::Orientation::kVertical,
       AlohaTabbedPane::TabStripStyle::kHighlight, true);
-  tabbed_pane->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorSysHeaderContainer));
 
   tabbed_pane_ = AddChildView(std::move(tabbed_pane));
 
   tabbed_pane_->set_listener(this);
   layout->SetFlexForView(tabbed_pane_, 1);
 
-  // 随意添加一个 Tab
-  auto webapp_view = std::make_unique<WebAppContentView>(
-      GURL(AlohaBrowserContentView::kAlohaHomeURL), this);
-  webapp_view->Init();
-
-  auto* raw_webapp_view = webapp_view.get();
-  // auto* view = tabbed_pane_->AddTab(
-  //     base::UTF8ToUTF16(std::string("Aloha Home")), std::move(webapp_view));
-  AddBrowserContentView("Aloha Main", std::move(webapp_view));
-  LOG(INFO) << raw_webapp_view;
-  // LOG(INFO) << view;
+  // 添加 tab 以测试
+  for (int i = 0; i < 5; i++) {
+    auto webapp_view = std::make_unique<WebAppContentView>(
+        GURL(AlohaBrowserContentView::kAlohaHomeURL), this);
+    webapp_view->Init();
+    AddBrowserContentView("Aloha Main" + std::to_string(i),
+                          std::move(webapp_view));
+  }
 }
 
 void MainWidgetDelegateView::AddBrowserContentView(
@@ -191,8 +192,8 @@ void MainWidgetDelegateView::AddBrowserContentView(
   if (tab_view_iter != views_in_independent_window_.end()) {
     auto tab_view = tab_view_iter->second;
     auto* empty_view = tab_view->contents();
-    tabbed_pane_->GetContents()->RemoveChildViewT(empty_view);
-    tabbed_pane_->GetContents()->AddChildView(std::move(content_view));
+    tabbed_pane_->GetContentsContainer()->RemoveChildViewT(empty_view);
+    tabbed_pane_->GetContentsContainer()->AddChildView(std::move(content_view));
 
     tab_view->SetContents(tab_view_iter->first);
     return;
@@ -220,8 +221,8 @@ MainWidgetDelegateView::MoveOutBrowserContentView(
         // 为被移除的区域添加内容，未来通过点击定位到被移除且独立出来的窗口上 将
         // content view 移除掉，并存储到容器中，维护一个 content 到 tab 的映射
         auto tab_view =
-            tabbed_pane_->GetContents()->RemoveChildViewT(content_view);
-        tab->SetContents(tabbed_pane_->GetContents()->AddChildView(
+            tabbed_pane_->GetContentsContainer()->RemoveChildViewT(content_view);
+        tab->SetContents(tabbed_pane_->GetContentsContainer()->AddChildView(
             std::make_unique<views::MessageBoxView>()));
 
         views_in_independent_window_.emplace(content_view, tab);

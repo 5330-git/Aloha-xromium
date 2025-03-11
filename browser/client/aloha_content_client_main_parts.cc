@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "aloha/views_content_client/views_content_client_main_parts.h"
+#include "aloha/browser/client/aloha_content_client_main_parts.h"
 
 #include <utility>
 
@@ -13,22 +13,22 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
-#include "aloha/views_content_client/views_content_client.h"
+#include "aloha/browser/client/aloha_browser_client.h"
 
 namespace aloha {
 
-ViewsContentClientMainParts::ViewsContentClientMainParts(
-    ViewsContentClient* views_content_client)
+AlohaContentClientMainParts::AlohaContentClientMainParts(
+    AlohaBrowserClient* views_content_client)
     : views_content_client_(views_content_client) {}
 
-ViewsContentClientMainParts::~ViewsContentClientMainParts() {
+AlohaContentClientMainParts::~AlohaContentClientMainParts() {
 }
 
 #if !BUILDFLAG(IS_APPLE)
-void ViewsContentClientMainParts::PreBrowserMain() {}
+void AlohaContentClientMainParts::PreBrowserMain() {}
 #endif
 
-int ViewsContentClientMainParts::PreMainMessageLoopRun() {
+int AlohaContentClientMainParts::PreMainMessageLoopRun() {
   ui::InitializeInputMethodForTesting();
   browser_context_ = std::make_unique<content::ShellBrowserContext>(false);
   // DevTools
@@ -40,12 +40,12 @@ int ViewsContentClientMainParts::PreMainMessageLoopRun() {
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void ViewsContentClientMainParts::WillRunMainMessageLoop(
+void AlohaContentClientMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
   run_loop = std::move(run_loop_);
 }
 
-void ViewsContentClientMainParts::PostMainMessageLoopRun() {
+void AlohaContentClientMainParts::PostMainMessageLoopRun() {
   browser_context_.reset();
   views_delegate_.reset();
 }

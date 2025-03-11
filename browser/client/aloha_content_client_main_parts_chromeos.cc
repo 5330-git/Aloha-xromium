@@ -6,8 +6,8 @@
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/aura/window.h"
-#include "aloha/views_content_client/views_content_client.h"
-#include "aloha/views_content_client/views_content_client_main_parts_aura.h"
+#include "aloha/browser/client/aloha_browser_client.h"
+#include "aloha/browser/client/views_content_client_main_parts_aura.h"
 #include "ui/wm/test/wm_test_helper.h"
 
 namespace aloha {
@@ -15,10 +15,10 @@ namespace aloha {
 namespace {
 
 class ViewsContentClientMainPartsChromeOS
-    : public ViewsContentClientMainPartsAura {
+    : public AlohaContentClientMainPartsAura {
  public:
   explicit ViewsContentClientMainPartsChromeOS(
-      ViewsContentClient* views_content_client);
+      AlohaBrowserClient* views_content_client);
 
   ViewsContentClientMainPartsChromeOS(
       const ViewsContentClientMainPartsChromeOS&) = delete;
@@ -37,11 +37,11 @@ class ViewsContentClientMainPartsChromeOS
 };
 
 ViewsContentClientMainPartsChromeOS::ViewsContentClientMainPartsChromeOS(
-    ViewsContentClient* views_content_client)
-    : ViewsContentClientMainPartsAura(views_content_client) {}
+    AlohaBrowserClient* views_content_client)
+    : AlohaContentClientMainPartsAura(views_content_client) {}
 
 int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
-  ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
+  AlohaContentClientMainPartsAura::PreMainMessageLoopRun();
 
   // Set up basic pieces of views::corewm.
   wm_test_helper_ = std::make_unique<wm::WMTestHelper>(gfx::Size(1024, 768));
@@ -59,14 +59,14 @@ int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
 void ViewsContentClientMainPartsChromeOS::PostMainMessageLoopRun() {
   wm_test_helper_.reset();
 
-  ViewsContentClientMainPartsAura::PostMainMessageLoopRun();
+  AlohaContentClientMainPartsAura::PostMainMessageLoopRun();
 }
 
 }  // namespace
 
 // static
-std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(ViewsContentClient* views_content_client) {
+std::unique_ptr<AlohaContentClientMainParts>
+AlohaContentClientMainParts::Create(AlohaBrowserClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsChromeOS>(
       views_content_client);
 }

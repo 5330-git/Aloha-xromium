@@ -16,8 +16,8 @@
 #include "content/shell/browser/shell_application_mac.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/views/test/test_views_delegate.h"
-#include "aloha/views_content_client/views_content_client.h"
-#include "aloha/views_content_client/views_content_client_main_parts.h"
+#include "aloha/browser/client/aloha_browser_client.h"
+#include "aloha/browser/client/aloha_content_client_main_parts.h"
 
 // A simple NSApplicationDelegate that provides a basic mainMenu and can
 // activate a task when the application has finished loading.
@@ -35,10 +35,10 @@ namespace aloha {
 
 namespace {
 
-class ViewsContentClientMainPartsMac : public ViewsContentClientMainParts {
+class ViewsContentClientMainPartsMac : public AlohaContentClientMainParts {
  public:
   explicit ViewsContentClientMainPartsMac(
-      ViewsContentClient* views_content_client);
+      AlohaBrowserClient* views_content_client);
 
   ViewsContentClientMainPartsMac(const ViewsContentClientMainPartsMac&) =
       delete;
@@ -55,8 +55,8 @@ class ViewsContentClientMainPartsMac : public ViewsContentClientMainParts {
 };
 
 ViewsContentClientMainPartsMac::ViewsContentClientMainPartsMac(
-    ViewsContentClient* views_content_client)
-    : ViewsContentClientMainParts(views_content_client) {
+    AlohaBrowserClient* views_content_client)
+    : AlohaContentClientMainParts(views_content_client) {
   // Cache the child process path to avoid triggering an AssertIOAllowed.
   base::FilePath child_process_exe;
   base::PathService::Get(content::CHILD_PROCESS_EXE, &child_process_exe);
@@ -66,7 +66,7 @@ ViewsContentClientMainPartsMac::ViewsContentClientMainPartsMac(
 }
 
 int ViewsContentClientMainPartsMac::PreMainMessageLoopRun() {
-  ViewsContentClientMainParts::PreMainMessageLoopRun();
+  AlohaContentClientMainParts::PreMainMessageLoopRun();
 
   views_delegate()->set_context_factory(content::GetContextFactory());
 
@@ -76,7 +76,7 @@ int ViewsContentClientMainPartsMac::PreMainMessageLoopRun() {
   NSWindow* window_context = nil;
   [app_controller_
       setOnApplicationDidFinishLaunching:
-          base::BindOnce(&ViewsContentClient::OnPreMainMessageLoopRun,
+          base::BindOnce(&AlohaBrowserClient::OnPreMainMessageLoopRun,
                          base::Unretained(views_content_client()),
                          base::Unretained(browser_context()),
                          base::Unretained(window_context))];
@@ -91,13 +91,13 @@ ViewsContentClientMainPartsMac::~ViewsContentClientMainPartsMac() {
 }  // namespace
 
 // static
-std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(ViewsContentClient* views_content_client) {
+std::unique_ptr<AlohaContentClientMainParts>
+AlohaContentClientMainParts::Create(AlohaBrowserClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsMac>(views_content_client);
 }
 
 // static
-void ViewsContentClientMainParts::PreBrowserMain() {
+void AlohaContentClientMainParts::PreBrowserMain() {
   // Simply instantiating an instance of ShellCrApplication serves to register
   // it as the application class. Do make sure that no other code has done this
   // first, though.

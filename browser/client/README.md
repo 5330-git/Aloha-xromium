@@ -6,7 +6,7 @@
 
 # 修改的接口
 
-## ViewsContentBrowserClient
+## AlohaContentBrowserClient
 
 1. 解决没有 User Agent 的问题
    1. 参考：[User-Agent - HTTP | MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/User-Agent)

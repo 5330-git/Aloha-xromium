@@ -7,8 +7,7 @@
 
 #include <memory>
 
-// #include "aloha/browser/ui/native/widget_delegate_view.h"
-#include "aloha/views_content_client/views_content_client_main_parts.h"
+#include "aloha/browser/client/aloha_content_client_main_parts.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -17,17 +16,17 @@
 
 namespace aloha {
 
-class ViewsContentClient;
+class AlohaBrowserClient;
 
-class ViewsContentBrowserClient : public content::ContentBrowserClient {
+class AlohaContentBrowserClient : public content::ContentBrowserClient {
  public:
-  explicit ViewsContentBrowserClient(ViewsContentClient* views_content_client);
+  explicit AlohaContentBrowserClient(AlohaBrowserClient* views_content_client);
 
-  ViewsContentBrowserClient(const ViewsContentBrowserClient&) = delete;
-  ViewsContentBrowserClient& operator=(const ViewsContentBrowserClient&) =
+  AlohaContentBrowserClient(const AlohaContentBrowserClient&) = delete;
+  AlohaContentBrowserClient& operator=(const AlohaContentBrowserClient&) =
       delete;
 
-  ~ViewsContentBrowserClient() override;
+  ~AlohaContentBrowserClient() override;
 
   // content::ContentBrowserClient:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
@@ -42,8 +41,8 @@ class ViewsContentBrowserClient : public content::ContentBrowserClient {
   CreateDevToolsManagerDelegate() override;
 
  private:
-  raw_ptr<ViewsContentClient> views_content_client_ = nullptr;
-  raw_ptr<ViewsContentClientMainParts> views_content_client_main_parts_ = nullptr;
+  raw_ptr<AlohaBrowserClient> views_content_client_ = nullptr;
+  raw_ptr<AlohaContentClientMainParts> views_content_client_main_parts_ = nullptr;
 };
 
 }  // namespace aloha

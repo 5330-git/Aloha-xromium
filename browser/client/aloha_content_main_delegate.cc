@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "aloha/views_content_client/views_content_main_delegate.h"
+#include "aloha/browser/client/aloha_content_main_delegate.h"
 
 #include <string>
 
@@ -16,9 +16,9 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
-#include "aloha/views_content_client/views_content_browser_client.h"
-#include "aloha/views_content_client/views_content_client.h"
-#include "aloha/views_content_client/views_content_client_main_parts.h"
+#include "aloha/browser/client/aloha_content_browser_client.h"
+#include "aloha/browser/client/aloha_browser_client.h"
+#include "aloha/browser/client/aloha_content_client_main_parts.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/logging_win.h"
@@ -36,15 +36,15 @@ const GUID kViewsContentClientProviderName =
 
 }  // namespace
 
-ViewsContentMainDelegate::ViewsContentMainDelegate(
-    ViewsContentClient* views_content_client)
-    : views_content_client_(views_content_client) {
+AlohaContentMainDelegate::AlohaContentMainDelegate(
+    AlohaBrowserClient* browser_client)
+    : browser_client_(browser_client) {
 }
 
-ViewsContentMainDelegate::~ViewsContentMainDelegate() {
+AlohaContentMainDelegate::~AlohaContentMainDelegate() {
 }
 
-std::optional<int> ViewsContentMainDelegate::BasicStartupComplete() {
+std::optional<int> AlohaContentMainDelegate::BasicStartupComplete() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
@@ -64,7 +64,7 @@ std::optional<int> ViewsContentMainDelegate::BasicStartupComplete() {
   return std::nullopt;
 }
 
-void ViewsContentMainDelegate::PreSandboxStartup() {
+void AlohaContentMainDelegate::PreSandboxStartup() {
   base::FilePath ui_test_pak_path;
   CHECK(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
   ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
@@ -83,27 +83,27 @@ void ViewsContentMainDelegate::PreSandboxStartup() {
         ui_test_resources_200, ui::k200Percent);
   }
 
-  views_content_client_->OnResourcesLoaded();
+  browser_client_->OnResourcesLoaded();
 }
 
-std::optional<int> ViewsContentMainDelegate::PreBrowserMain() {
+std::optional<int> AlohaContentMainDelegate::PreBrowserMain() {
   std::optional<int> exit_code = content::ContentMainDelegate::PreBrowserMain();
   if (exit_code.has_value())
     return exit_code;
 
-  ViewsContentClientMainParts::PreBrowserMain();
+  AlohaContentClientMainParts::PreBrowserMain();
   return std::nullopt;
 }
 
-content::ContentClient* ViewsContentMainDelegate::CreateContentClient() {
+content::ContentClient* AlohaContentMainDelegate::CreateContentClient() {
   return &content_client_;
 }
 
 content::ContentBrowserClient*
-    ViewsContentMainDelegate::CreateContentBrowserClient() {
-  browser_client_ =
-      std::make_unique<ViewsContentBrowserClient>(views_content_client_);
-  return browser_client_.get();
+    AlohaContentMainDelegate::CreateContentBrowserClient() {
+  content_browser_client_ =
+      std::make_unique<AlohaContentBrowserClient>(browser_client_);
+  return content_browser_client_.get();
 }
 
 }  // namespace aloha

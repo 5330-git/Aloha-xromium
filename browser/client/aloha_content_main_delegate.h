@@ -13,17 +13,17 @@
 
 namespace aloha {
 
-class ViewsContentBrowserClient;
-class ViewsContentClient;
+class AlohaContentBrowserClient;
+class AlohaBrowserClient;
 
-class ViewsContentMainDelegate : public content::ContentMainDelegate {
+class AlohaContentMainDelegate : public content::ContentMainDelegate {
  public:
-  explicit ViewsContentMainDelegate(ViewsContentClient* views_content_client);
+  explicit AlohaContentMainDelegate(AlohaBrowserClient* browser_client);
 
-  ViewsContentMainDelegate(const ViewsContentMainDelegate&) = delete;
-  ViewsContentMainDelegate& operator=(const ViewsContentMainDelegate&) = delete;
+  AlohaContentMainDelegate(const AlohaContentMainDelegate&) = delete;
+  AlohaContentMainDelegate& operator=(const AlohaContentMainDelegate&) = delete;
 
-  ~ViewsContentMainDelegate() override;
+  ~AlohaContentMainDelegate() override;
 
   // content::ContentMainDelegate implementation
   std::optional<int> BasicStartupComplete() override;
@@ -33,9 +33,9 @@ class ViewsContentMainDelegate : public content::ContentMainDelegate {
   content::ContentBrowserClient* CreateContentBrowserClient() override;
 
  private:
-  std::unique_ptr<ViewsContentBrowserClient> browser_client_;
+  std::unique_ptr<AlohaContentBrowserClient> content_browser_client_;
   content::ShellContentClient content_client_;
-  raw_ptr<ViewsContentClient> views_content_client_;
+  raw_ptr<AlohaBrowserClient> browser_client_;
 };
 
 }  // namespace aloha

@@ -7,8 +7,6 @@
 
 #include <utility>
 
-#include "aloha/views_content_client/views_content_client.h"
-#include "aloha/views_content_client/views_content_client_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -37,34 +35,33 @@ namespace aloha {
 // int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 //   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
 //   content::InitializeSandboxInfo(&sandbox_info);
-//   aloha::ViewsContentClient params(instance, &sandbox_info);
+//   aloha::AlohaBrowserClient params(instance, &sandbox_info);
 // #else
 // int main(int argc, const char** argv) {
-//   aloha::ViewsContentClient params(argc, argv);
+//   aloha::AlohaBrowserClient params(argc, argv);
 // #endif
 //
 //   params.set_on_pre_main_message_loop_run_callback(
 //       base::BindOnce(&InitMyApp));
 //   return params.RunMain();
 // }
-// class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
-class ViewsContentClient {
+class AlohaBrowserClient {
  public:
   using OnPreMainMessageLoopRunCallback =
       base::OnceCallback<void(content::BrowserContext* browser_context,
                               gfx::NativeWindow window_context)>;
 
 #if BUILDFLAG(IS_WIN)
-  ViewsContentClient(HINSTANCE instance,
+  AlohaBrowserClient(HINSTANCE instance,
                      sandbox::SandboxInterfaceInfo* sandbox_info);
 #else
-  ViewsContentClient(int argc, const char** argv);
+  AlohaBrowserClient(int argc, const char** argv);
 #endif
 
-  ViewsContentClient(const ViewsContentClient&) = delete;
-  ViewsContentClient& operator=(const ViewsContentClient&) = delete;
+  AlohaBrowserClient(const AlohaBrowserClient&) = delete;
+  AlohaBrowserClient& operator=(const AlohaBrowserClient&) = delete;
 
-  ~ViewsContentClient();
+  ~AlohaBrowserClient();
 
   // Runs content::ContentMain() using the ExamplesMainDelegate.
   int RunMain();
@@ -89,7 +86,7 @@ class ViewsContentClient {
   // Calls a callback to signal resources have been loaded.
   void OnResourcesLoaded();
 
-  // Called by ViewsContentClientMainParts to supply the quit-closure to use
+  // Called by AlohaContentClientMainParts to supply the quit-closure to use
   // to exit RunMain().
   void set_quit_closure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);

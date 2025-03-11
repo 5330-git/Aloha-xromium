@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
-#include "aloha/views_content_client/views_content_client_main_parts.h"
+#include "aloha/browser/client/aloha_content_client_main_parts.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace wm {
@@ -18,17 +18,17 @@ class WMState;
 
 namespace aloha {
 
-class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
+class AlohaContentClientMainPartsAura : public AlohaContentClientMainParts {
  public:
-  ViewsContentClientMainPartsAura(const ViewsContentClientMainPartsAura&) =
+  AlohaContentClientMainPartsAura(const AlohaContentClientMainPartsAura&) =
       delete;
-  ViewsContentClientMainPartsAura& operator=(
-      const ViewsContentClientMainPartsAura&) = delete;
+  AlohaContentClientMainPartsAura& operator=(
+      const AlohaContentClientMainPartsAura&) = delete;
 
  protected:
-  explicit ViewsContentClientMainPartsAura(
-      ViewsContentClient* views_content_client);
-  ~ViewsContentClientMainPartsAura() override;
+  explicit AlohaContentClientMainPartsAura(
+      AlohaBrowserClient* views_content_client);
+  ~AlohaContentClientMainPartsAura() override;
 
   // content::BrowserMainParts:
   void ToolkitInitialized() override;

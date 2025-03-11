@@ -29,21 +29,21 @@ class TestViewsDelegate;
 
 namespace aloha {
 
-class ViewsContentClient;
+class AlohaBrowserClient;
 
-class ViewsContentClientMainParts : public content::BrowserMainParts {
+class AlohaContentClientMainParts : public content::BrowserMainParts {
  public:
   // Platform-specific create function.
-  static std::unique_ptr<ViewsContentClientMainParts> Create(
-      ViewsContentClient* views_content_client);
+  static std::unique_ptr<AlohaContentClientMainParts> Create(
+      AlohaBrowserClient* views_content_client);
 
   static void PreBrowserMain();
 
-  ViewsContentClientMainParts(const ViewsContentClientMainParts&) = delete;
-  ViewsContentClientMainParts& operator=(const ViewsContentClientMainParts&) =
+  AlohaContentClientMainParts(const AlohaContentClientMainParts&) = delete;
+  AlohaContentClientMainParts& operator=(const AlohaContentClientMainParts&) =
       delete;
 
-  ~ViewsContentClientMainParts() override;
+  ~AlohaContentClientMainParts() override;
 
   // content::BrowserMainParts:
   int PreMainMessageLoopRun() override;
@@ -55,13 +55,13 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
     return browser_context_.get();
   }
 
-  ViewsContentClient* views_content_client() {
+  AlohaBrowserClient* views_content_client() {
     return views_content_client_;
   }
 
  protected:
-  explicit ViewsContentClientMainParts(
-      ViewsContentClient* views_content_client);
+  explicit AlohaContentClientMainParts(
+      AlohaBrowserClient* views_content_client);
 
 #if BUILDFLAG(IS_APPLE)
   views::TestViewsDelegate* views_delegate() { return views_delegate_.get(); }
@@ -76,7 +76,7 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
 
   std::unique_ptr<views::TestViewsDelegate> views_delegate_;
 
-  raw_ptr<ViewsContentClient> views_content_client_;
+  raw_ptr<AlohaBrowserClient> views_content_client_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };

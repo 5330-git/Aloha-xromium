@@ -5,29 +5,27 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
-source_set("views_content_client") {
+source_set("aloha_browser_client") {
   testonly = true
   sources = [
-    "views_content_browser_client.cc",
-    "views_content_browser_client.h",
-    "views_content_client.cc",
-    "views_content_client.h",
-    "views_content_client_export.h",
-    "views_content_client_main_parts.cc",
-    "views_content_client_main_parts.h",
-    "views_content_main_delegate.cc",
-    "views_content_main_delegate.h",
+    "aloha_browser_client.cc",
+    "aloha_browser_client.h",
+    "aloha_content_browser_client.cc",
+    "aloha_content_browser_client.h",
+    "aloha_content_client_main_parts.cc",
+    "aloha_content_client_main_parts.h",
+    "aloha_content_main_delegate.cc",
+    "aloha_content_main_delegate.h",
   ]
 
   if (is_chromeos_ash) {
-    sources += [ "views_content_client_main_parts_chromeos.cc" ]
+    sources += [ "aloha_content_client_main_parts_chromeos.cc" ]
   }
 
   if (is_mac) {
-    sources += [ "views_content_client_main_parts_mac.mm" ]
+    sources += [ "aloha_content_client_main_parts_mac.mm" ]
   }
 
-  defines = [ "VIEWS_CONTENT_CLIENT_IMPLEMENTATION" ]
   deps = [
     "//aloha/browser/devtools:aloha_devtools",
     "//aloha/browser/ui/views:views",
@@ -54,12 +52,12 @@ source_set("views_content_client") {
 
   if (use_aura) {
     sources += [
-      "views_content_client_main_parts_aura.cc",
-      "views_content_client_main_parts_aura.h",
+      "aloha_content_client_main_parts_aura.cc",
+      "aloha_content_client_main_parts_aura.h",
     ]
 
     if (!is_chromeos_ash) {
-      sources += [ "views_content_client_main_parts_desktop_aura.cc" ]
+      sources += [ "aloha_content_client_main_parts_desktop_aura.cc" ]
     }
 
     deps += [

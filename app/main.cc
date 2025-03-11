@@ -6,7 +6,7 @@
 // #include "aloha/browser/ui/native/widget_delegate_view.h"
 #include "aloha/browser/ui/views/widget/widget_delegate_view.h"
 #include "aloha/grit/aloha_resources.h"
-#include "aloha/views_content_client/views_content_client.h"
+#include "aloha/browser/client/aloha_browser_client.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -38,7 +38,7 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace {
-// Called after: ViewsContentMainDelegate::PreSandboxStartup()
+// Called after: AlohaContentMainDelegate::PreSandboxStartup()
 void OnResourcesLoaded() {
   base::FilePath aloha_pak_file;
   CHECK(base::PathService::Get(base::DIR_ASSETS, &aloha_pak_file));
@@ -53,7 +53,7 @@ void OnResourcesLoaded() {
 }
 // View / Widget 是自动管理内存的，不需要手动释放，否则会触发 HEAP_CORRUPTION
 
-void CreateAndShowMainWindow(aloha::ViewsContentClient* views_content_client,
+void CreateAndShowMainWindow(aloha::AlohaBrowserClient* views_content_client,
                              content::BrowserContext* browser_context,
                              gfx::NativeWindow window_context) {
   // 窗口已存在
@@ -111,7 +111,7 @@ int wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 
   } else {
     // 实现方式参考 ui\views\examples\examples_with_content_main.cc
-    aloha::ViewsContentClient aloha_views_content_client(instance,
+    aloha::AlohaBrowserClient aloha_views_content_client(instance,
                                                          &sandbox_info);
     // 加载 aloha资源
 

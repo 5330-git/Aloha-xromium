@@ -6,23 +6,25 @@
 
 #include <utility>
 
+#include "aloha/browser/client/aloha_content_client.h"
 #include "aloha/browser/devtools/devtools_server.h"
+#include "base/base64.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
-#include "aloha/browser/client/aloha_browser_client.h"
 
 namespace aloha {
 
 AlohaContentClientMainParts::AlohaContentClientMainParts(
-    AlohaBrowserClient* views_content_client)
+    AlohaContentClient* views_content_client)
     : views_content_client_(views_content_client) {}
 
-AlohaContentClientMainParts::~AlohaContentClientMainParts() {
-}
+AlohaContentClientMainParts::~AlohaContentClientMainParts() {}
 
 #if !BUILDFLAG(IS_APPLE)
 void AlohaContentClientMainParts::PreBrowserMain() {}
@@ -49,5 +51,39 @@ void AlohaContentClientMainParts::PostMainMessageLoopRun() {
   browser_context_.reset();
   views_delegate_.reset();
 }
+
+// // 参考 chrome\browser\chrome_browser_main_win.cc
+// void AlohaContentClientMainParts::PreCreateMainMessageLoop() {
+//   // 目前还未实现 Preferences 相关的功能（即 PrefService 相关）所以 先临时写个
+//   // demo:
+
+//   scoped_refptr<PrefRegistrySimple> registry =
+//       base::MakeRefCounted<PrefRegistrySimple>();
+//   registry->RegisterStringPref(kOsCryptEncryptedKeyPrefName,
+//                                "default key string");
+//   registry->RegisterBooleanPref(kOsCryptAuditEnabledPrefName, false);
+//   PrefServiceFactory pref_service_factory;
+//   scoped_refptr<InMemoryPrefStore> in_memory_pref_store =
+//       base::MakeRefCounted<InMemoryPrefStore>();
+//   pref_service_factory.set_managed_prefs(in_memory_pref_store);
+//   pref_service_factory.set_supervised_user_prefs(in_memory_pref_store);
+//   pref_service_factory.set_extension_prefs(in_memory_pref_store);
+//   pref_service_factory.set_supervised_user_prefs(in_memory_pref_store);
+//   pref_service_factory.set_command_line_prefs(in_memory_pref_store);
+//   pref_service_factory.set_user_prefs(in_memory_pref_store);
+//   pref_service_factory.set_recommended_prefs(in_memory_pref_store);
+
+//   pref_service_ = pref_service_factory.Create(registry);
+//   // 必须通过 pref_service_ 覆盖默认值，否则 HasPrefPath 会返回 false
+//   // 且要注意 key 是有固定格式的，而且要进行 Base64 编码
+//   pref_service_->SetString(
+//       kOsCryptEncryptedKeyPrefName,
+//       base::Base64Encode(std::string(kDPAPIKeyPrefix) + " temp test key"));
+//   CHECK(pref_service_->HasPrefPath("os_crypt.encrypted_key"));
+
+//   // Initialize the OSCrypt.
+//   bool os_crypt_init = OSCrypt::Init(pref_service_.get());
+//   DCHECK(os_crypt_init);
+// }
 
 }  // namespace aloha

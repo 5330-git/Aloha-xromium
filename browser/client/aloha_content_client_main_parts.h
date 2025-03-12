@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_main_parts.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -29,13 +30,13 @@ class TestViewsDelegate;
 
 namespace aloha {
 
-class AlohaBrowserClient;
+class AlohaContentClient;
 
 class AlohaContentClientMainParts : public content::BrowserMainParts {
  public:
   // Platform-specific create function.
   static std::unique_ptr<AlohaContentClientMainParts> Create(
-      AlohaBrowserClient* views_content_client);
+      AlohaContentClient* views_content_client);
 
   static void PreBrowserMain();
 
@@ -55,13 +56,11 @@ class AlohaContentClientMainParts : public content::BrowserMainParts {
     return browser_context_.get();
   }
 
-  AlohaBrowserClient* views_content_client() {
-    return views_content_client_;
-  }
+  AlohaContentClient* views_content_client() { return views_content_client_; }
 
  protected:
   explicit AlohaContentClientMainParts(
-      AlohaBrowserClient* views_content_client);
+      AlohaContentClient* views_content_client);
 
 #if BUILDFLAG(IS_APPLE)
   views::TestViewsDelegate* views_delegate() { return views_delegate_.get(); }
@@ -76,9 +75,10 @@ class AlohaContentClientMainParts : public content::BrowserMainParts {
 
   std::unique_ptr<views::TestViewsDelegate> views_delegate_;
 
-  raw_ptr<AlohaBrowserClient> views_content_client_;
+  raw_ptr<AlohaContentClient> views_content_client_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
+
 };
 
 }  // namespace aloha

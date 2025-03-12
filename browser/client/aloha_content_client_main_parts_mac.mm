@@ -16,7 +16,7 @@
 #include "content/shell/browser/shell_application_mac.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/views/test/test_views_delegate.h"
-#include "aloha/browser/client/aloha_browser_client.h"
+#include "aloha/browser/client/aloha_content_client.h"
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
 
 // A simple NSApplicationDelegate that provides a basic mainMenu and can
@@ -38,7 +38,7 @@ namespace {
 class ViewsContentClientMainPartsMac : public AlohaContentClientMainParts {
  public:
   explicit ViewsContentClientMainPartsMac(
-      AlohaBrowserClient* views_content_client);
+      AlohaContentClient* views_content_client);
 
   ViewsContentClientMainPartsMac(const ViewsContentClientMainPartsMac&) =
       delete;
@@ -55,7 +55,7 @@ class ViewsContentClientMainPartsMac : public AlohaContentClientMainParts {
 };
 
 ViewsContentClientMainPartsMac::ViewsContentClientMainPartsMac(
-    AlohaBrowserClient* views_content_client)
+    AlohaContentClient* views_content_client)
     : AlohaContentClientMainParts(views_content_client) {
   // Cache the child process path to avoid triggering an AssertIOAllowed.
   base::FilePath child_process_exe;
@@ -76,7 +76,7 @@ int ViewsContentClientMainPartsMac::PreMainMessageLoopRun() {
   NSWindow* window_context = nil;
   [app_controller_
       setOnApplicationDidFinishLaunching:
-          base::BindOnce(&AlohaBrowserClient::OnPreMainMessageLoopRun,
+          base::BindOnce(&AlohaContentClient::OnPreMainMessageLoopRun,
                          base::Unretained(views_content_client()),
                          base::Unretained(browser_context()),
                          base::Unretained(window_context))];
@@ -92,7 +92,7 @@ ViewsContentClientMainPartsMac::~ViewsContentClientMainPartsMac() {
 
 // static
 std::unique_ptr<AlohaContentClientMainParts>
-AlohaContentClientMainParts::Create(AlohaBrowserClient* views_content_client) {
+AlohaContentClientMainParts::Create(AlohaContentClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsMac>(views_content_client);
 }
 

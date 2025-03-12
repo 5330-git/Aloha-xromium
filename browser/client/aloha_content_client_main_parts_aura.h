@@ -27,7 +27,7 @@ class AlohaContentClientMainPartsAura : public AlohaContentClientMainParts {
 
  protected:
   explicit AlohaContentClientMainPartsAura(
-      AlohaBrowserClient* views_content_client);
+      AlohaContentClient* views_content_client);
   ~AlohaContentClientMainPartsAura() override;
 
   // content::BrowserMainParts:

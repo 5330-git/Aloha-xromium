@@ -15,7 +15,7 @@
 namespace aloha {
 
 AlohaContentClientMainPartsAura::AlohaContentClientMainPartsAura(
-    AlohaBrowserClient* views_content_client)
+    AlohaContentClient* views_content_client)
     : AlohaContentClientMainParts(views_content_client) {}
 
 AlohaContentClientMainPartsAura::~AlohaContentClientMainPartsAura() {

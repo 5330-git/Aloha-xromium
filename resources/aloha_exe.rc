@@ -1,2 +1,34 @@
+#include <windows.h>
 #define IDR_MAINFRAME 101
 IDR_MAINFRAME ICON "app_icons/aloha.ico"
+
+// 定义 VERSIONINFO 资源
+1 VERSIONINFO
+FILEVERSION     1, 0, 0, 0      // 文件版本号
+PRODUCTVERSION  1, 0, 0, 0      // 产品版本号
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       0               // 文件标志（通常为 0）
+FILEOS          VOS_NT_WINDOWS32 // 目标操作系统
+FILETYPE        VFT_APP         // 文件类型（应用程序）
+FILESUBTYPE     VFT2_UNKNOWN    // 文件子类型
+BEGIN
+    BLOCK "StringFileInfo"      // 字符串信息块
+    BEGIN
+        BLOCK "040904B0"        // 语言和字符集（英语，Unicode）
+        BEGIN
+            VALUE "CompanyName",        "Aloha-Xromium Developers\0"        // 公司名称
+            VALUE "FileDescription",    "Aloha-Xromium Browser\0"   // 文件描述
+            VALUE "FileVersion",        "alpha-v-1.0.0.0\0"           // 文件版本
+            VALUE "InternalName",       "Aloha-Xromium\0"             // 内部名称
+            VALUE "LegalCopyright",     "Copyright (C) 2025 Aloha-Xromium Developers\0" // 版权信息
+            VALUE "OriginalFilename",   "aloha.exe\0"         // 原始文件名
+            VALUE "ProductName",        "Aloha-Xromium Browser\0"    // 产品名称
+            VALUE "ProductVersion",     "alpha-v-1.0.0.0\0"           // 产品版本
+        END
+    END
+
+    BLOCK "VarFileInfo"         // 变量信息块
+    BEGIN
+        VALUE "Translation", 0x0409, 1200 // 语言和字符集（英语，Unicode）
+    END
+END

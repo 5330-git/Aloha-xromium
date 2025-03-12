@@ -17,7 +17,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
 #include "aloha/browser/client/aloha_content_browser_client.h"
-#include "aloha/browser/client/aloha_browser_client.h"
+#include "aloha/browser/client/aloha_content_client.h"
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -37,7 +37,7 @@ const GUID kViewsContentClientProviderName =
 }  // namespace
 
 AlohaContentMainDelegate::AlohaContentMainDelegate(
-    AlohaBrowserClient* browser_client)
+    AlohaContentClient* browser_client)
     : browser_client_(browser_client) {
 }
 
@@ -95,7 +95,7 @@ std::optional<int> AlohaContentMainDelegate::PreBrowserMain() {
   return std::nullopt;
 }
 
-content::ContentClient* AlohaContentMainDelegate::CreateContentClient() {
+[[maybe_unused]] content::ContentClient* AlohaContentMainDelegate::CreateContentClient() {
   return &content_client_;
 }
 

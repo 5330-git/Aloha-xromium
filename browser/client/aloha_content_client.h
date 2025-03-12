@@ -5,11 +5,13 @@
 #ifndef ALOHA_VIEWS_CONTENT_CLIENT_VIEWS_CONTENT_CLIENT_H_
 #define ALOHA_VIEWS_CONTENT_CLIENT_VIEWS_CONTENT_CLIENT_H_
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_service.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -35,33 +37,33 @@ namespace aloha {
 // int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 //   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
 //   content::InitializeSandboxInfo(&sandbox_info);
-//   aloha::AlohaBrowserClient params(instance, &sandbox_info);
+//   aloha::AlohaContentClient params(instance, &sandbox_info);
 // #else
 // int main(int argc, const char** argv) {
-//   aloha::AlohaBrowserClient params(argc, argv);
+//   aloha::AlohaContentClient params(argc, argv);
 // #endif
 //
 //   params.set_on_pre_main_message_loop_run_callback(
 //       base::BindOnce(&InitMyApp));
 //   return params.RunMain();
 // }
-class AlohaBrowserClient {
+class AlohaContentClient {
  public:
   using OnPreMainMessageLoopRunCallback =
       base::OnceCallback<void(content::BrowserContext* browser_context,
                               gfx::NativeWindow window_context)>;
 
 #if BUILDFLAG(IS_WIN)
-  AlohaBrowserClient(HINSTANCE instance,
+  AlohaContentClient(HINSTANCE instance,
                      sandbox::SandboxInterfaceInfo* sandbox_info);
 #else
-  AlohaBrowserClient(int argc, const char** argv);
+  AlohaContentClient(int argc, const char** argv);
 #endif
 
-  AlohaBrowserClient(const AlohaBrowserClient&) = delete;
-  AlohaBrowserClient& operator=(const AlohaBrowserClient&) = delete;
+  AlohaContentClient(const AlohaContentClient&) = delete;
+  AlohaContentClient& operator=(const AlohaContentClient&) = delete;
 
-  ~AlohaBrowserClient();
+  ~AlohaContentClient();
 
   // Runs content::ContentMain() using the ExamplesMainDelegate.
   int RunMain();
@@ -104,6 +106,11 @@ class AlohaBrowserClient {
   OnPreMainMessageLoopRunCallback on_pre_main_message_loop_run_callback_;
   base::OnceClosure on_resources_loaded_callback_;
   base::OnceClosure quit_closure_;
+
+  // TEMP
+  // TODO(yeyun.anton): 调研如何存储 PrefService
+  std::unique_ptr<PrefService> pref_service_;
+
 };
 
 }  // namespace aloha

@@ -6,7 +6,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/aura/window.h"
-#include "aloha/browser/client/aloha_browser_client.h"
+#include "aloha/browser/client/aloha_content_client.h"
 #include "aloha/browser/client/views_content_client_main_parts_aura.h"
 #include "ui/wm/test/wm_test_helper.h"
 
@@ -18,7 +18,7 @@ class ViewsContentClientMainPartsChromeOS
     : public AlohaContentClientMainPartsAura {
  public:
   explicit ViewsContentClientMainPartsChromeOS(
-      AlohaBrowserClient* views_content_client);
+      AlohaContentClient* views_content_client);
 
   ViewsContentClientMainPartsChromeOS(
       const ViewsContentClientMainPartsChromeOS&) = delete;
@@ -37,7 +37,7 @@ class ViewsContentClientMainPartsChromeOS
 };
 
 ViewsContentClientMainPartsChromeOS::ViewsContentClientMainPartsChromeOS(
-    AlohaBrowserClient* views_content_client)
+    AlohaContentClient* views_content_client)
     : AlohaContentClientMainPartsAura(views_content_client) {}
 
 int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
@@ -66,7 +66,7 @@ void ViewsContentClientMainPartsChromeOS::PostMainMessageLoopRun() {
 
 // static
 std::unique_ptr<AlohaContentClientMainParts>
-AlohaContentClientMainParts::Create(AlohaBrowserClient* views_content_client) {
+AlohaContentClientMainParts::Create(AlohaContentClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsChromeOS>(
       views_content_client);
 }

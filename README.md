@@ -41,3 +41,7 @@
 [【一】从0定制浏览器：引言-CSDN博客](https://blog.csdn.net/yyy11280335/article/details/145891351?spm=1001.2014.3001.5502)
 
 [【二】从0定制浏览器：修复HTML5播放器问题并引入 Native Views-CSDN博客](https://blog.csdn.net/yyy11280335/article/details/145899706?spm=1001.2014.3001.5502)
+
+[【间章一】从0定制浏览器：实现脚本工具管理耦合Chromium的代码更改-CSDN博客](https://blog.csdn.net/yyy11280335/article/details/145921616?spm=1001.2014.3001.5501)
+
+[【三】从0定制浏览器：Tab UI 交互优化以及添加程序图标-CSDN博客](https://blog.csdn.net/yyy11280335/article/details/146159997?spm=1001.2014.3001.5501)

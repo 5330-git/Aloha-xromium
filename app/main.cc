@@ -6,7 +6,7 @@
 // #include "aloha/browser/ui/native/widget_delegate_view.h"
 #include "aloha/browser/ui/views/widget/widget_delegate_view.h"
 #include "aloha/grit/aloha_resources.h"
-#include "aloha/browser/client/aloha_browser_client.h"
+#include "aloha/browser/client/aloha_content_client.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -53,7 +53,7 @@ void OnResourcesLoaded() {
 }
 // View / Widget 是自动管理内存的，不需要手动释放，否则会触发 HEAP_CORRUPTION
 
-void CreateAndShowMainWindow(aloha::AlohaBrowserClient* views_content_client,
+void CreateAndShowMainWindow(aloha::AlohaContentClient* views_content_client,
                              content::BrowserContext* browser_context,
                              gfx::NativeWindow window_context) {
   // 窗口已存在
@@ -111,18 +111,18 @@ int wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 
   } else {
     // 实现方式参考 ui\views\examples\examples_with_content_main.cc
-    aloha::AlohaBrowserClient aloha_views_content_client(instance,
+    aloha::AlohaContentClient aloha_content_client(instance,
                                                          &sandbox_info);
     // 加载 aloha资源
 
-    aloha_views_content_client.set_on_resources_loaded_callback(
+    aloha_content_client.set_on_resources_loaded_callback(
         base::BindOnce(&OnResourcesLoaded));
     // 设置预启动回调
-    aloha_views_content_client.set_on_pre_main_message_loop_run_callback(
+    aloha_content_client.set_on_pre_main_message_loop_run_callback(
         base::BindOnce(&CreateAndShowMainWindow,
-                       base::Unretained(&aloha_views_content_client)));
+                       base::Unretained(&aloha_content_client)));
     // 启动消息循环
-    return aloha_views_content_client.RunMain();
+    return aloha_content_client.RunMain();
   }
 }
 #elif BUILDFLAG(IS_MAC)

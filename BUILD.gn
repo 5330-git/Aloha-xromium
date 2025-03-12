@@ -47,7 +47,7 @@ static_library("aloha_webview_lib") {
   public_deps = [
     "//aloha/browser/devtools:aloha_devtools",
     "//aloha/browser/ui/views:views",
-    "//aloha/browser/client:aloha_browser_client",
+    "//aloha/browser/client:aloha_content_client",
   ]
 
   deps = [
@@ -189,7 +189,7 @@ executable("aloha") {
   
   deps = [
     ":aloha_webview_lib",
-    "//aloha/browser/client:aloha_browser_client",
+    "//aloha/browser/client:aloha_content_client",
     "//base",
     "//content/public/app",
     "//ui/aura:aura",

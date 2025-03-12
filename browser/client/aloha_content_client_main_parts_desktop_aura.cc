@@ -6,7 +6,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
-#include "aloha/browser/client/aloha_browser_client.h"
+#include "aloha/browser/client/aloha_content_client.h"
 #include "aloha/browser/client/aloha_content_client_main_parts_aura.h"
 
 namespace aloha {
@@ -17,7 +17,7 @@ class AlohaContentClientMainPartsDesktopAura
     : public AlohaContentClientMainPartsAura {
  public:
   explicit AlohaContentClientMainPartsDesktopAura(
-      AlohaBrowserClient* views_content_client);
+      AlohaContentClient* views_content_client);
   AlohaContentClientMainPartsDesktopAura(
       const AlohaContentClientMainPartsDesktopAura&) = delete;
   AlohaContentClientMainPartsDesktopAura& operator=(
@@ -33,7 +33,7 @@ class AlohaContentClientMainPartsDesktopAura
 };
 
 AlohaContentClientMainPartsDesktopAura::AlohaContentClientMainPartsDesktopAura(
-    AlohaBrowserClient* views_content_client)
+    AlohaContentClient* views_content_client)
     : AlohaContentClientMainPartsAura(views_content_client) {}
 
 int AlohaContentClientMainPartsDesktopAura::PreMainMessageLoopRun() {
@@ -56,7 +56,7 @@ void AlohaContentClientMainPartsDesktopAura::PostMainMessageLoopRun() {
 
 // static
 std::unique_ptr<AlohaContentClientMainParts>
-AlohaContentClientMainParts::Create(AlohaBrowserClient* views_content_client) {
+AlohaContentClientMainParts::Create(AlohaContentClient* views_content_client) {
   return std::make_unique<AlohaContentClientMainPartsDesktopAura>(
       views_content_client);
 }

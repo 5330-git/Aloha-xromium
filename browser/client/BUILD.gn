@@ -5,11 +5,11 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
-source_set("aloha_browser_client") {
+source_set("aloha_content_client") {
   testonly = true
   sources = [
-    "aloha_browser_client.cc",
-    "aloha_browser_client.h",
+    "aloha_content_client.cc",
+    "aloha_content_client.h",
     "aloha_content_browser_client.cc",
     "aloha_content_browser_client.h",
     "aloha_content_client_main_parts.cc",

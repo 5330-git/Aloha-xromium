@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "aloha/browser/client/aloha_content_client_main_parts.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <utility>
 
+#include "aloha/common/aloha_main_client.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -16,12 +19,10 @@
 #include "content/shell/browser/shell_application_mac.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/views/test/test_views_delegate.h"
-#include "aloha/browser/client/aloha_content_client.h"
-#include "aloha/browser/client/aloha_content_client_main_parts.h"
 
 // A simple NSApplicationDelegate that provides a basic mainMenu and can
 // activate a task when the application has finished loading.
-@interface ViewsContentClientAppController : NSObject <NSApplicationDelegate> {
+@interface AlohaContentClientAppController : NSObject <NSApplicationDelegate> {
  @private
   base::OnceClosure _onApplicationDidFinishLaunching;
 }
@@ -35,37 +36,36 @@ namespace aloha {
 
 namespace {
 
-class ViewsContentClientMainPartsMac : public AlohaContentClientMainParts {
+class AlohaContentClientMainPartsMac : public AlohaContentClientMainParts {
  public:
-  explicit ViewsContentClientMainPartsMac(
-      AlohaContentClient* views_content_client);
+  AlohaContentClientMainPartsMac();
 
-  ViewsContentClientMainPartsMac(const ViewsContentClientMainPartsMac&) =
+  AlohaContentClientMainPartsMac(const AlohaContentClientMainPartsMac&) =
       delete;
-  ViewsContentClientMainPartsMac& operator=(
-      const ViewsContentClientMainPartsMac&) = delete;
+  AlohaContentClientMainPartsMac& operator=(
+      const AlohaContentClientMainPartsMac&) = delete;
 
-  ~ViewsContentClientMainPartsMac() override;
+  ~AlohaContentClientMainPartsMac() override;
 
   // content::BrowserMainParts:
   int PreMainMessageLoopRun() override;
 
  private:
-  ViewsContentClientAppController* __strong app_controller_;
+  AlohaContentClientAppController* __strong app_controller_;
 };
 
-ViewsContentClientMainPartsMac::ViewsContentClientMainPartsMac(
-    AlohaContentClient* views_content_client)
-    : AlohaContentClientMainParts(views_content_client) {
+AlohaContentClientMainPartsMac::AlohaContentClientMainPartsMac(
+    )
+    : AlohaContentClientMainParts() {
   // Cache the child process path to avoid triggering an AssertIOAllowed.
   base::FilePath child_process_exe;
   base::PathService::Get(content::CHILD_PROCESS_EXE, &child_process_exe);
 
-  app_controller_ = [[ViewsContentClientAppController alloc] init];
+  app_controller_ = [[AlohaContentClientAppController alloc] init];
   NSApplication.sharedApplication.delegate = app_controller_;
 }
 
-int ViewsContentClientMainPartsMac::PreMainMessageLoopRun() {
+int AlohaContentClientMainPartsMac::PreMainMessageLoopRun() {
   AlohaContentClientMainParts::PreMainMessageLoopRun();
 
   views_delegate()->set_context_factory(content::GetContextFactory());
@@ -74,17 +74,16 @@ int ViewsContentClientMainPartsMac::PreMainMessageLoopRun() {
   // the widget can activate, but (even if configured) the mainMenu won't be
   // ready to switch over in the OSX aloha, so it will look strange.
   NSWindow* window_context = nil;
-  [app_controller_
-      setOnApplicationDidFinishLaunching:
-          base::BindOnce(&AlohaContentClient::OnPreMainMessageLoopRun,
-                         base::Unretained(views_content_client()),
-                         base::Unretained(browser_context()),
-                         base::Unretained(window_context))];
+  [app_controller_ setOnApplicationDidFinishLaunching:
+                       base::BindOnce(&AlohaMainClient::OnPreMainMessageLoopRun,
+                                      base::Unretained(AlohaMainClient::GetInstance()),
+                                      base::Unretained(browser_context()),
+                                      base::Unretained(window_context))];
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-ViewsContentClientMainPartsMac::~ViewsContentClientMainPartsMac() {
+AlohaContentClientMainPartsMac::~AlohaContentClientMainPartsMac() {
   NSApplication.sharedApplication.delegate = nil;
 }
 
@@ -92,8 +91,8 @@ ViewsContentClientMainPartsMac::~ViewsContentClientMainPartsMac() {
 
 // static
 std::unique_ptr<AlohaContentClientMainParts>
-AlohaContentClientMainParts::Create(AlohaContentClient* views_content_client) {
-  return std::make_unique<ViewsContentClientMainPartsMac>(views_content_client);
+AlohaContentClientMainParts::Create() {
+  return std::make_unique<AlohaContentClientMainPartsMac>();
 }
 
 // static
@@ -107,7 +106,7 @@ void AlohaContentClientMainParts::PreBrowserMain() {
 
 }  // namespace aloha
 
-@implementation ViewsContentClientAppController
+@implementation AlohaContentClientAppController
 
 - (void)setOnApplicationDidFinishLaunching:(base::OnceClosure)task {
   _onApplicationDidFinishLaunching = std::move(task);

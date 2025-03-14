@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "aloha/browser/client/aloha_content_client.h"
+#include "aloha/common/aloha_main_client.h"
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
 #include "aloha/browser/devtools/devtools_manager_delegate.h"
 #include "aloha/browser/ui/views/aloha_web_contents_view_delegate_views.h"
@@ -34,10 +34,6 @@
 
 namespace aloha {
 
-AlohaContentBrowserClient::AlohaContentBrowserClient(
-    AlohaContentClient* views_content_client)
-    : views_content_client_(views_content_client) {}
-
 AlohaContentBrowserClient::~AlohaContentBrowserClient() {}
 
 // 这个接口只会在启动的时候调用一次（BrowserMainLoop::Init()），理论上不应该多次调用
@@ -46,7 +42,7 @@ AlohaContentBrowserClient::CreateBrowserMainParts(
     bool /* is_integration_test */) {
   DCHECK(!views_content_client_main_parts_);
   auto browser_main_parts =
-      AlohaContentClientMainParts::Create(views_content_client_);
+      AlohaContentClientMainParts::Create();
   views_content_client_main_parts_ = browser_main_parts.get();
   return browser_main_parts;
 }
@@ -70,7 +66,7 @@ AlohaContentBrowserClient::CreateDevToolsManagerDelegate() {
       browser_context,
       base::BindRepeating(
           [](content::BrowserMainParts* browser_main_parts,
-             AlohaContentClient* views_content_client,
+             AlohaMainClient* views_content_client,
              content::BrowserContext* browser_context,
              const GURL& devtools_url) {
             static auto devtools_webview =
@@ -94,7 +90,7 @@ AlohaContentBrowserClient::CreateDevToolsManagerDelegate() {
             return devtools_webview->GetWebContents();
           },
           base::Unretained(views_content_client_main_parts_),
-          views_content_client_));
+          AlohaMainClient::GetInstance()));
   // return nullptr;
 }
 

@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
+#include "build/chromeos_buildflags.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace wm {
@@ -20,14 +20,13 @@ namespace aloha {
 
 class AlohaContentClientMainPartsAura : public AlohaContentClientMainParts {
  public:
+  AlohaContentClientMainPartsAura();
   AlohaContentClientMainPartsAura(const AlohaContentClientMainPartsAura&) =
       delete;
   AlohaContentClientMainPartsAura& operator=(
       const AlohaContentClientMainPartsAura&) = delete;
 
  protected:
-  explicit AlohaContentClientMainPartsAura(
-      AlohaContentClient* views_content_client);
   ~AlohaContentClientMainPartsAura() override;
 
   // content::BrowserMainParts:

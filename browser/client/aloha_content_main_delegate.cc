@@ -6,6 +6,9 @@
 
 #include <string>
 
+#include "aloha/browser/client/aloha_content_browser_client.h"
+#include "aloha/common/aloha_main_client.h"
+#include "aloha/browser/client/aloha_content_client_main_parts.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -16,9 +19,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
-#include "aloha/browser/client/aloha_content_browser_client.h"
-#include "aloha/browser/client/aloha_content_client.h"
-#include "aloha/browser/client/aloha_content_client_main_parts.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/logging_win.h"
@@ -29,20 +29,18 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 // {83FAC8EE-7A0E-4dbb-A3F6-6F500D7CAB1A}
-const GUID kViewsContentClientProviderName =
-    { 0x83fac8ee, 0x7a0e, 0x4dbb,
-        { 0xa3, 0xf6, 0x6f, 0x50, 0xd, 0x7c, 0xab, 0x1a } };
+const GUID kViewsContentClientProviderName = {
+    0x83fac8ee,
+    0x7a0e,
+    0x4dbb,
+    {0xa3, 0xf6, 0x6f, 0x50, 0xd, 0x7c, 0xab, 0x1a}};
 #endif
 
 }  // namespace
 
-AlohaContentMainDelegate::AlohaContentMainDelegate(
-    AlohaContentClient* browser_client)
-    : browser_client_(browser_client) {
-}
+AlohaContentMainDelegate::AlohaContentMainDelegate() = default;
 
-AlohaContentMainDelegate::~AlohaContentMainDelegate() {
-}
+AlohaContentMainDelegate::~AlohaContentMainDelegate() {}
 
 std::optional<int> AlohaContentMainDelegate::BasicStartupComplete() {
   const base::CommandLine& command_line =
@@ -83,26 +81,27 @@ void AlohaContentMainDelegate::PreSandboxStartup() {
         ui_test_resources_200, ui::k200Percent);
   }
 
-  browser_client_->OnResourcesLoaded();
+  AlohaMainClient::GetInstance()->OnResourcesLoaded();
 }
 
 std::optional<int> AlohaContentMainDelegate::PreBrowserMain() {
   std::optional<int> exit_code = content::ContentMainDelegate::PreBrowserMain();
-  if (exit_code.has_value())
+  if (exit_code.has_value()) {
     return exit_code;
+  }
 
   AlohaContentClientMainParts::PreBrowserMain();
   return std::nullopt;
 }
 
-[[maybe_unused]] content::ContentClient* AlohaContentMainDelegate::CreateContentClient() {
+[[maybe_unused]] content::ContentClient*
+AlohaContentMainDelegate::CreateContentClient() {
   return &content_client_;
 }
 
 content::ContentBrowserClient*
-    AlohaContentMainDelegate::CreateContentBrowserClient() {
-  content_browser_client_ =
-      std::make_unique<AlohaContentBrowserClient>(browser_client_);
+AlohaContentMainDelegate::CreateContentBrowserClient() {
+  content_browser_client_ = std::make_unique<AlohaContentBrowserClient>();
   return content_browser_client_.get();
 }
 

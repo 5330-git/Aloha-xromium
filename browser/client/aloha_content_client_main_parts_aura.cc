@@ -14,12 +14,9 @@
 
 namespace aloha {
 
-AlohaContentClientMainPartsAura::AlohaContentClientMainPartsAura(
-    AlohaContentClient* views_content_client)
-    : AlohaContentClientMainParts(views_content_client) {}
+AlohaContentClientMainPartsAura::AlohaContentClientMainPartsAura() = default;
 
-AlohaContentClientMainPartsAura::~AlohaContentClientMainPartsAura() {
-}
+AlohaContentClientMainPartsAura::~AlohaContentClientMainPartsAura() {}
 
 void AlohaContentClientMainPartsAura::ToolkitInitialized() {
   AlohaContentClientMainParts::ToolkitInitialized();

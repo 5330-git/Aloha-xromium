@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "aloha/browser/client/aloha_content_client.h"
 #include "aloha/browser/devtools/devtools_server.h"
+#include "aloha/common/aloha_main_client.h"
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -20,10 +20,7 @@
 
 namespace aloha {
 
-AlohaContentClientMainParts::AlohaContentClientMainParts(
-    AlohaContentClient* views_content_client)
-    : views_content_client_(views_content_client) {}
-
+AlohaContentClientMainParts::AlohaContentClientMainParts() = default;
 AlohaContentClientMainParts::~AlohaContentClientMainParts() {}
 
 #if !BUILDFLAG(IS_APPLE)
@@ -38,7 +35,7 @@ int AlohaContentClientMainParts::PreMainMessageLoopRun() {
 
   views_delegate_ = std::make_unique<views::DesktopTestViewsDelegate>();
   run_loop_ = std::make_unique<base::RunLoop>();
-  views_content_client()->set_quit_closure(run_loop_->QuitClosure());
+  AlohaMainClient::GetInstance()->set_quit_closure(run_loop_->QuitClosure());
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -54,7 +51,8 @@ void AlohaContentClientMainParts::PostMainMessageLoopRun() {
 
 // // 参考 chrome\browser\chrome_browser_main_win.cc
 // void AlohaContentClientMainParts::PreCreateMainMessageLoop() {
-//   // 目前还未实现 Preferences 相关的功能（即 PrefService 相关）所以 先临时写个
+//   // 目前还未实现 Preferences 相关的功能（即 PrefService 相关）所以
+//   先临时写个
 //   // demo:
 
 //   scoped_refptr<PrefRegistrySimple> registry =

@@ -8,8 +8,6 @@ import("//build/config/ui.gni")
 source_set("aloha_content_client") {
   testonly = true
   sources = [
-    "aloha_content_client.cc",
-    "aloha_content_client.h",
     "aloha_content_browser_client.cc",
     "aloha_content_browser_client.h",
     "aloha_content_client_main_parts.cc",
@@ -29,6 +27,7 @@ source_set("aloha_content_client") {
   deps = [
     "//aloha/browser/devtools:aloha_devtools",
     "//aloha/browser/ui/views:views",
+    "//aloha/common:common",
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",

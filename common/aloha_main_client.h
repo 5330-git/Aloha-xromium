@@ -1,4 +1,7 @@
+// 参考: ui/views/views_content_client/views_content_client.h
+
 // Copyright 2014 The Chromium Authors
+// Copyright 2025 The Aloha-Xromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,49 +27,29 @@ struct SandboxInterfaceInfo;
 
 namespace aloha {
 
-// Creates a multiprocess views runtime for running an example application.
-//
-// Sample usage:
-//
-// void InitMyApp(content::BrowserContext* browser_context,
-//                gfx::NativeWindow window_context) {
-//   // Create desired windows and views here. Runs on the aloha thread.
-// }
-//
-// #if BUILDFLAG(IS_WIN)
-// int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
-//   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
-//   content::InitializeSandboxInfo(&sandbox_info);
-//   aloha::AlohaContentClient params(instance, &sandbox_info);
-// #else
-// int main(int argc, const char** argv) {
-//   aloha::AlohaContentClient params(argc, argv);
-// #endif
-//
-//   params.set_on_pre_main_message_loop_run_callback(
-//       base::BindOnce(&InitMyApp));
-//   return params.RunMain();
-// }
-class AlohaContentClient {
+// AlohaMainClient 是 Aloha 所有进程的入口点，通过调用 AlohaMain
+// 接口启动进程任务
+
+class AlohaMainClient {
  public:
   using OnPreMainMessageLoopRunCallback =
       base::OnceCallback<void(content::BrowserContext* browser_context,
                               gfx::NativeWindow window_context)>;
-
+  static AlohaMainClient* GetInstance();
 #if BUILDFLAG(IS_WIN)
-  AlohaContentClient(HINSTANCE instance,
-                     sandbox::SandboxInterfaceInfo* sandbox_info);
+  static void InitInstance(HINSTANCE instance,
+                           sandbox::SandboxInterfaceInfo* sandbox_info);
 #else
-  AlohaContentClient(int argc, const char** argv);
+  static void InitInstance(int argc, const char** argv);
 #endif
 
-  AlohaContentClient(const AlohaContentClient&) = delete;
-  AlohaContentClient& operator=(const AlohaContentClient&) = delete;
+  AlohaMainClient(const AlohaMainClient&) = delete;
+  AlohaMainClient& operator=(const AlohaMainClient&) = delete;
 
-  ~AlohaContentClient();
+  ~AlohaMainClient();
 
   // Runs content::ContentMain() using the ExamplesMainDelegate.
-  int RunMain();
+  int AlohaMain();
 
   // The task to run at the end of BrowserMainParts::PreMainMessageLoopRun().
   // Ignored if this is not the main process.
@@ -89,7 +72,7 @@ class AlohaContentClient {
   void OnResourcesLoaded();
 
   // Called by AlohaContentClientMainParts to supply the quit-closure to use
-  // to exit RunMain().
+  // to exit AlohaMain().
   void set_quit_closure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);
   }
@@ -97,12 +80,16 @@ class AlohaContentClient {
 
  private:
 #if BUILDFLAG(IS_WIN)
+  AlohaMainClient(HINSTANCE instance,
+                  sandbox::SandboxInterfaceInfo* sandbox_info);
   HINSTANCE instance_;
   raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info_;
 #else
+  AlohaMainClient(int argc, const char** argv);
   int argc_;
   raw_ptr<const char*> argv_;
 #endif
+
   OnPreMainMessageLoopRunCallback on_pre_main_message_loop_run_callback_;
   base::OnceClosure on_resources_loaded_callback_;
   base::OnceClosure quit_closure_;
@@ -110,7 +97,6 @@ class AlohaContentClient {
   // TEMP
   // TODO(yeyun.anton): 调研如何存储 PrefService
   std::unique_ptr<PrefService> pref_service_;
-
 };
 
 }  // namespace aloha

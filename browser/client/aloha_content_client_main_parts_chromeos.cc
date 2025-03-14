@@ -2,30 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "aloha/common/aloha_main_client.h"
+#include "aloha/browser/client/aloha_content_client_main_parts_aura.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/aura/window.h"
-#include "aloha/browser/client/aloha_content_client.h"
-#include "aloha/browser/client/views_content_client_main_parts_aura.h"
 #include "ui/wm/test/wm_test_helper.h"
 
 namespace aloha {
 
 namespace {
 
-class ViewsContentClientMainPartsChromeOS
+class AlohaContentClientMainPartsChromeOS
     : public AlohaContentClientMainPartsAura {
  public:
-  explicit ViewsContentClientMainPartsChromeOS(
-      AlohaContentClient* views_content_client);
+  AlohaContentClientMainPartsChromeOS();
 
-  ViewsContentClientMainPartsChromeOS(
-      const ViewsContentClientMainPartsChromeOS&) = delete;
-  ViewsContentClientMainPartsChromeOS& operator=(
-      const ViewsContentClientMainPartsChromeOS&) = delete;
+  AlohaContentClientMainPartsChromeOS(
+      const AlohaContentClientMainPartsChromeOS&) = delete;
+  AlohaContentClientMainPartsChromeOS& operator=(
+      const AlohaContentClientMainPartsChromeOS&) = delete;
 
-  ~ViewsContentClientMainPartsChromeOS() override {}
+  ~AlohaContentClientMainPartsChromeOS() override {}
 
   // content::BrowserMainParts:
   int PreMainMessageLoopRun() override;
@@ -36,11 +35,9 @@ class ViewsContentClientMainPartsChromeOS
   std::unique_ptr<::wm::WMTestHelper> wm_test_helper_;
 };
 
-ViewsContentClientMainPartsChromeOS::ViewsContentClientMainPartsChromeOS(
-    AlohaContentClient* views_content_client)
-    : AlohaContentClientMainPartsAura(views_content_client) {}
-
-int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
+AlohaContentClientMainPartsChromeOS::AlohaContentClientMainPartsChromeOS() =
+    default;
+int AlohaContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
   AlohaContentClientMainPartsAura::PreMainMessageLoopRun();
 
   // Set up basic pieces of views::corewm.
@@ -50,13 +47,12 @@ int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
 
   // Ensure Aura knows where to open new windows.
   aura::Window* root_window = wm_test_helper_->host()->window();
-  views_content_client()->OnPreMainMessageLoopRun(browser_context(),
-                                                  root_window);
-
+  AlohaMainClient::GetInstance()->OnPreMainMessageLoopRun(browser_context(),
+                                                          root_window);
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void ViewsContentClientMainPartsChromeOS::PostMainMessageLoopRun() {
+void AlohaContentClientMainPartsChromeOS::PostMainMessageLoopRun() {
   wm_test_helper_.reset();
 
   AlohaContentClientMainPartsAura::PostMainMessageLoopRun();
@@ -66,9 +62,8 @@ void ViewsContentClientMainPartsChromeOS::PostMainMessageLoopRun() {
 
 // static
 std::unique_ptr<AlohaContentClientMainParts>
-AlohaContentClientMainParts::Create(AlohaContentClient* views_content_client) {
-  return std::make_unique<ViewsContentClientMainPartsChromeOS>(
-      views_content_client);
+AlohaContentClientMainParts::Create() {
+  return std::make_unique<AlohaContentClientMainPartsChromeOS>();
 }
 
 }  // namespace aloha

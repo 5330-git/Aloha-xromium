@@ -14,11 +14,11 @@
 namespace aloha {
 
 class AlohaContentBrowserClient;
-class AlohaContentClient;
+class AlohaMainClient;
 
 class AlohaContentMainDelegate : public content::ContentMainDelegate {
  public:
-  explicit AlohaContentMainDelegate(AlohaContentClient* browser_client);
+  AlohaContentMainDelegate();
 
   AlohaContentMainDelegate(const AlohaContentMainDelegate&) = delete;
   AlohaContentMainDelegate& operator=(const AlohaContentMainDelegate&) = delete;
@@ -35,7 +35,6 @@ class AlohaContentMainDelegate : public content::ContentMainDelegate {
  private:
   std::unique_ptr<AlohaContentBrowserClient> content_browser_client_;
   [[maybe_unused]] content::ShellContentClient content_client_;
-  raw_ptr<AlohaContentClient> browser_client_;
 };
 
 // TODO(yeyun.anton): 参考 chrome_main_delegate.cc 实现 UserDataDir 的初始化

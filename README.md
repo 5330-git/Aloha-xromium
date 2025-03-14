@@ -45,3 +45,5 @@
 [【间章一】从0定制浏览器：实现脚本工具管理耦合Chromium的代码更改-CSDN博客](https://blog.csdn.net/yyy11280335/article/details/145921616?spm=1001.2014.3001.5501)
 
 [【三】从0定制浏览器：Tab UI 交互优化以及添加程序图标-CSDN博客](https://blog.csdn.net/yyy11280335/article/details/146159997?spm=1001.2014.3001.5501)
+
+[【四】从0定制浏览器：增加 Cookies 持久化支持-CSDN博客](https://blog.csdn.net/yyy11280335/article/details/146232877?spm=1001.2014.3001.5501)

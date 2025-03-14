@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "aloha/browser/client/aloha_content_client.h"
+#include "aloha/common/aloha_main_client.h"
 
 #include <utility>
 
@@ -33,6 +33,8 @@
 
 namespace aloha {
 namespace {
+AlohaMainClient* g_aloha_main_client = nullptr;
+
 // Contains base64 random key encrypted with DPAPI.
 constexpr char kOsCryptEncryptedKeyPrefName[] = "os_crypt.encrypted_key";
 // Whether or not an attempt has been made to enable audit for the DPAPI
@@ -81,19 +83,38 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
 }
 }  // namespace
 
+
+// static
+AlohaMainClient* AlohaMainClient::GetInstance() {
+  return g_aloha_main_client;
+}
+
 #if BUILDFLAG(IS_WIN)
-AlohaContentClient::AlohaContentClient(
-    HINSTANCE instance,
-    sandbox::SandboxInterfaceInfo* sandbox_info)
+AlohaMainClient::AlohaMainClient(HINSTANCE instance,
+                                 sandbox::SandboxInterfaceInfo* sandbox_info)
     : instance_(instance), sandbox_info_(sandbox_info) {}
+
+// static
+void AlohaMainClient::InitInstance(
+    HINSTANCE instance,
+    sandbox::SandboxInterfaceInfo* sandbox_info) {
+  CHECK(!g_aloha_main_client);
+  g_aloha_main_client = new AlohaMainClient(instance, sandbox_info);
+}
 #else
-AlohaContentClient::AlohaContentClient(int argc, const char** argv)
+AlohaMainClient::AlohaMainClient(int argc, const char** argv)
     : argc_(argc), argv_(argv) {}
+
+// static
+void AlohaMainClient::InitInstance(int argc, const char** argv) {
+  CHECK(!g_aloha_main_client);
+  g_aloha_main_client = new AlohaMainClient(argc, argv);
+}
 #endif
 
-AlohaContentClient::~AlohaContentClient() {}
+AlohaMainClient::~AlohaMainClient() {}
 
-int AlohaContentClient::RunMain() {
+int AlohaMainClient::AlohaMain() {
   // TEMP USING START
   // 初始化 PrefService 和 OSCrypt
   // 目前还未实现 Preferences 相关的功能（即 PrefService 相关）所以 先临时写个
@@ -139,7 +160,7 @@ int AlohaContentClient::RunMain() {
   LOG(INFO) << "OSCrypt key: " << OSCrypt::GetRawEncryptionKey();
   // TEMP USING END
 
-  AlohaContentMainDelegate delegate(this);
+  AlohaContentMainDelegate delegate;
   content::ContentMainParams params(&delegate);
 
 #if BUILDFLAG(IS_WIN)
@@ -153,14 +174,14 @@ int AlohaContentClient::RunMain() {
   return content::ContentMain(std::move(params));
 }
 
-void AlohaContentClient::OnPreMainMessageLoopRun(
+void AlohaMainClient::OnPreMainMessageLoopRun(
     content::BrowserContext* browser_context,
     gfx::NativeWindow window_context) {
   std::move(on_pre_main_message_loop_run_callback_)
       .Run(browser_context, window_context);
 }
 
-void AlohaContentClient::OnResourcesLoaded() {
+void AlohaMainClient::OnResourcesLoaded() {
   if (on_resources_loaded_callback_) {
     std::move(on_resources_loaded_callback_).Run();
   }

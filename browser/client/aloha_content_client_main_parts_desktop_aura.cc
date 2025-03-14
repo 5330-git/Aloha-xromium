@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "aloha/common/aloha_main_client.h"
+#include "aloha/browser/client/aloha_content_client_main_parts_aura.h"
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
-#include "aloha/browser/client/aloha_content_client.h"
-#include "aloha/browser/client/aloha_content_client_main_parts_aura.h"
 
 namespace aloha {
 
@@ -16,8 +16,8 @@ namespace {
 class AlohaContentClientMainPartsDesktopAura
     : public AlohaContentClientMainPartsAura {
  public:
-  explicit AlohaContentClientMainPartsDesktopAura(
-      AlohaContentClient* views_content_client);
+  AlohaContentClientMainPartsDesktopAura();
+
   AlohaContentClientMainPartsDesktopAura(
       const AlohaContentClientMainPartsDesktopAura&) = delete;
   AlohaContentClientMainPartsDesktopAura& operator=(
@@ -32,16 +32,16 @@ class AlohaContentClientMainPartsDesktopAura
   std::unique_ptr<display::Screen> screen_;
 };
 
-AlohaContentClientMainPartsDesktopAura::AlohaContentClientMainPartsDesktopAura(
-    AlohaContentClient* views_content_client)
-    : AlohaContentClientMainPartsAura(views_content_client) {}
+AlohaContentClientMainPartsDesktopAura::
+    AlohaContentClientMainPartsDesktopAura() = default;
 
 int AlohaContentClientMainPartsDesktopAura::PreMainMessageLoopRun() {
   AlohaContentClientMainPartsAura::PreMainMessageLoopRun();
 
   screen_ = views::CreateDesktopScreen();
 
-  views_content_client()->OnPreMainMessageLoopRun(browser_context(), nullptr);
+  AlohaMainClient::GetInstance()->OnPreMainMessageLoopRun(browser_context(),
+                                                          nullptr);
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
@@ -56,9 +56,8 @@ void AlohaContentClientMainPartsDesktopAura::PostMainMessageLoopRun() {
 
 // static
 std::unique_ptr<AlohaContentClientMainParts>
-AlohaContentClientMainParts::Create(AlohaContentClient* views_content_client) {
-  return std::make_unique<AlohaContentClientMainPartsDesktopAura>(
-      views_content_client);
+AlohaContentClientMainParts::Create() {
+  return std::make_unique<AlohaContentClientMainPartsDesktopAura>();
 }
 
 }  // namespace aloha

@@ -16,11 +16,11 @@
 
 namespace aloha {
 
-class AlohaContentClient;
+class AlohaMainClient;
 
 class AlohaContentBrowserClient : public content::ContentBrowserClient {
  public:
-  explicit AlohaContentBrowserClient(AlohaContentClient* views_content_client);
+  AlohaContentBrowserClient() = default;
 
   AlohaContentBrowserClient(const AlohaContentBrowserClient&) = delete;
   AlohaContentBrowserClient& operator=(const AlohaContentBrowserClient&) =
@@ -63,7 +63,6 @@ class AlohaContentBrowserClient : public content::ContentBrowserClient {
         cert_verifier_creation_params) override;
 
  private:
-  raw_ptr<AlohaContentClient> views_content_client_ = nullptr;
   raw_ptr<AlohaContentClientMainParts> views_content_client_main_parts_ =
       nullptr;
 };

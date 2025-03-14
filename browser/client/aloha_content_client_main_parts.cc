@@ -29,7 +29,7 @@ void AlohaContentClientMainParts::PreBrowserMain() {}
 
 int AlohaContentClientMainParts::PreMainMessageLoopRun() {
   ui::InitializeInputMethodForTesting();
-  browser_context_ = std::make_unique<content::ShellBrowserContext>(false);
+  browser_context_ = std::make_unique<aloha::AlohaBrowserProfile>(false);
   // DevTools
   devtools::StartHttpHandler(browser_context_.get());
 

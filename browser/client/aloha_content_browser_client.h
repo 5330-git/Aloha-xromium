@@ -63,7 +63,7 @@ class AlohaContentBrowserClient : public content::ContentBrowserClient {
         cert_verifier_creation_params) override;
 
  private:
-  raw_ptr<AlohaContentClientMainParts> views_content_client_main_parts_ =
+  raw_ptr<AlohaContentClientMainParts> aloha_content_client_main_parts_ =
       nullptr;
 };
 

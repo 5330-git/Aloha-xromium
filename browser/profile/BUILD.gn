@@ -1,12 +1,8 @@
-source_set("common") {
+source_set("profile") {
   testonly = true
   sources = [
-    "aloha_constants.cc",
-    "aloha_constants.h",
-    "aloha_main_client.cc",
-    "aloha_main_client.h",
-    "aloha_paths.cc",
-    "aloha_paths.h",
+    "aloha_browser_profile.cc",
+    "aloha_browser_profile.h",
   ]
   public_deps = [
     "//aloha:resources",

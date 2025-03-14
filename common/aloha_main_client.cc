@@ -160,6 +160,9 @@ int AlohaMainClient::AlohaMain() {
   LOG(INFO) << "OSCrypt key: " << OSCrypt::GetRawEncryptionKey();
   // TEMP USING END
 
+
+  // INIT COMMAND LINE
+
   AlohaContentMainDelegate delegate;
   content::ContentMainParams params(&delegate);
 

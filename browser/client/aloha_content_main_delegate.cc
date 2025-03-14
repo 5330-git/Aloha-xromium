@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "aloha/browser/client/aloha_content_main_delegate.h"
+#include "aloha/common/aloha_paths.h"
 
 #include <string>
 
@@ -57,7 +58,7 @@ std::optional<int> AlohaContentMainDelegate::BasicStartupComplete() {
   logging::LogEventProvider::Initialize(kViewsContentClientProviderName);
 #endif
 
-  content::RegisterShellPathProvider();
+  aloha::path_service::RegisterAlohaPathProvider();
 
   return std::nullopt;
 }

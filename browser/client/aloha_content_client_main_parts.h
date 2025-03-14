@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "aloha/browser/profile/aloha_browser_profile.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
@@ -18,10 +19,6 @@
 
 namespace base {
 class RunLoop;
-}
-
-namespace content {
-class ShellBrowserContext;
 }
 
 namespace views {
@@ -51,7 +48,7 @@ class AlohaContentClientMainParts : public content::BrowserMainParts {
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 
-  content::ShellBrowserContext* browser_context() {
+  aloha::AlohaBrowserProfile* browser_context() {
     return browser_context_.get();
   }
 
@@ -67,7 +64,7 @@ class AlohaContentClientMainParts : public content::BrowserMainParts {
   display::ScopedNativeScreen desktop_screen_;
 #endif
 
-  std::unique_ptr<content::ShellBrowserContext> browser_context_;
+  std::unique_ptr<aloha::AlohaBrowserProfile> browser_context_;
 
   std::unique_ptr<views::TestViewsDelegate> views_delegate_;
 

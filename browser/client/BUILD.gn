@@ -26,6 +26,7 @@ source_set("aloha_content_client") {
 
   deps = [
     "//aloha/browser/devtools:aloha_devtools",
+    "//aloha/browser/profile:profile",
     "//aloha/browser/ui/views:views",
     "//aloha/common:common",
     "//base",

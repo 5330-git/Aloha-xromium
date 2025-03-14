@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// 来源于 webui_examples，未来将完全弃用
+
 #ifndef ALOHA_COMMON_CONTENT_CLIENT_H_
 #define ALOHA_COMMON_CONTENT_CLIENT_H_
 

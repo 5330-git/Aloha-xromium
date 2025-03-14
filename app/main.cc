@@ -4,8 +4,9 @@
 
 #include "aloha/app/main_delegate.h"
 // #include "aloha/browser/ui/native/widget_delegate_view.h"
-#include "aloha/common/aloha_main_client.h"
+#include "aloha/app/aloha_main.h"
 #include "aloha/browser/ui/views/widget/widget_delegate_view.h"
+#include "aloha/common/aloha_main_client.h"
 #include "aloha/grit/aloha_resources.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -111,9 +112,7 @@ int wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 
   } else {
     // 实现方式参考 ui\views\examples\examples_with_content_main.cc
-    aloha::AlohaMainClient::InitInstance(instance, &sandbox_info);
     // 加载 aloha资源
-
     aloha::AlohaMainClient::GetInstance()->set_on_resources_loaded_callback(
         base::BindOnce(&OnResourcesLoaded));
     // 设置预启动回调
@@ -122,7 +121,7 @@ int wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
             &CreateAndShowMainWindow,
             base::Unretained(aloha::AlohaMainClient::GetInstance())));
     // 启动消息循环
-    return aloha::AlohaMainClient::GetInstance()->AlohaMain();
+    return aloha::AlohaMain(instance, &sandbox_info);
   }
 }
 #elif BUILDFLAG(IS_MAC)

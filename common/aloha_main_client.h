@@ -36,20 +36,14 @@ class AlohaMainClient {
       base::OnceCallback<void(content::BrowserContext* browser_context,
                               gfx::NativeWindow window_context)>;
   static AlohaMainClient* GetInstance();
-#if BUILDFLAG(IS_WIN)
-  static void InitInstance(HINSTANCE instance,
-                           sandbox::SandboxInterfaceInfo* sandbox_info);
-#else
-  static void InitInstance(int argc, const char** argv);
-#endif
 
   AlohaMainClient(const AlohaMainClient&) = delete;
   AlohaMainClient& operator=(const AlohaMainClient&) = delete;
 
   ~AlohaMainClient();
 
-  // Runs content::ContentMain() using the ExamplesMainDelegate.
-  int AlohaMain();
+  // 在 AlohaMain（content::ContentMain）之前调用
+  int PreAlohaMain();
 
   // The task to run at the end of BrowserMainParts::PreMainMessageLoopRun().
   // Ignored if this is not the main process.
@@ -79,16 +73,7 @@ class AlohaMainClient {
   base::OnceClosure& quit_closure() { return quit_closure_; }
 
  private:
-#if BUILDFLAG(IS_WIN)
-  AlohaMainClient(HINSTANCE instance,
-                  sandbox::SandboxInterfaceInfo* sandbox_info);
-  HINSTANCE instance_;
-  raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info_;
-#else
-  AlohaMainClient(int argc, const char** argv);
-  int argc_;
-  raw_ptr<const char*> argv_;
-#endif
+  AlohaMainClient();
 
   OnPreMainMessageLoopRunCallback on_pre_main_message_loop_run_callback_;
   base::OnceClosure on_resources_loaded_callback_;

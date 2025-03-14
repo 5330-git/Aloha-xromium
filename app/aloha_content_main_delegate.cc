@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "aloha/browser/client/aloha_content_main_delegate.h"
-#include "aloha/common/aloha_paths.h"
+#include "aloha/app/aloha_content_main_delegate.h"
 
 #include <string>
 
 #include "aloha/browser/client/aloha_content_browser_client.h"
-#include "aloha/common/aloha_main_client.h"
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
+#include "aloha/common/aloha_main_client.h"
+#include "aloha/common/aloha_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
-#include "content/shell/browser/shell_paths.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
@@ -95,9 +94,8 @@ std::optional<int> AlohaContentMainDelegate::PreBrowserMain() {
   return std::nullopt;
 }
 
-[[maybe_unused]] content::ContentClient*
-AlohaContentMainDelegate::CreateContentClient() {
-  return &content_client_;
+content::ContentClient* AlohaContentMainDelegate::CreateContentClient() {
+  return &aloha_content_client_;
 }
 
 content::ContentBrowserClient*

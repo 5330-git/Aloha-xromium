@@ -6,9 +6,6 @@
 
 #include <memory>
 
-#include "content/browser/browser_context_impl.h"
-#include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 

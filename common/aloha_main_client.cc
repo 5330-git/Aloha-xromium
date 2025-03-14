@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "aloha/browser/client/aloha_content_main_delegate.h"
 #include "aloha/grit/aloha_resources.h"
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
@@ -83,38 +82,18 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
 }
 }  // namespace
 
-
 // static
 AlohaMainClient* AlohaMainClient::GetInstance() {
+  if (!g_aloha_main_client) {
+    g_aloha_main_client = new AlohaMainClient();
+  }
   return g_aloha_main_client;
 }
 
-#if BUILDFLAG(IS_WIN)
-AlohaMainClient::AlohaMainClient(HINSTANCE instance,
-                                 sandbox::SandboxInterfaceInfo* sandbox_info)
-    : instance_(instance), sandbox_info_(sandbox_info) {}
-
-// static
-void AlohaMainClient::InitInstance(
-    HINSTANCE instance,
-    sandbox::SandboxInterfaceInfo* sandbox_info) {
-  CHECK(!g_aloha_main_client);
-  g_aloha_main_client = new AlohaMainClient(instance, sandbox_info);
-}
-#else
-AlohaMainClient::AlohaMainClient(int argc, const char** argv)
-    : argc_(argc), argv_(argv) {}
-
-// static
-void AlohaMainClient::InitInstance(int argc, const char** argv) {
-  CHECK(!g_aloha_main_client);
-  g_aloha_main_client = new AlohaMainClient(argc, argv);
-}
-#endif
-
+AlohaMainClient::AlohaMainClient() = default;
 AlohaMainClient::~AlohaMainClient() {}
 
-int AlohaMainClient::AlohaMain() {
+int AlohaMainClient::PreAlohaMain() {
   // TEMP USING START
   // 初始化 PrefService 和 OSCrypt
   // 目前还未实现 Preferences 相关的功能（即 PrefService 相关）所以 先临时写个
@@ -160,21 +139,9 @@ int AlohaMainClient::AlohaMain() {
   LOG(INFO) << "OSCrypt key: " << OSCrypt::GetRawEncryptionKey();
   // TEMP USING END
 
-
   // INIT COMMAND LINE
 
-  AlohaContentMainDelegate delegate;
-  content::ContentMainParams params(&delegate);
-
-#if BUILDFLAG(IS_WIN)
-  params.instance = instance_;
-  params.sandbox_info = sandbox_info_;
-#else
-  params.argc = argc_;
-  params.argv = argv_;
-#endif
-
-  return content::ContentMain(std::move(params));
+  return 0;
 }
 
 void AlohaMainClient::OnPreMainMessageLoopRun(

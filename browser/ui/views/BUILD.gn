@@ -26,6 +26,7 @@ source_set("views") {
     "//aloha/resources/vector_icons:vector_icons",
     "//base",
     "//chrome/browser/resources/webui_gallery:resources",
+    "//components/favicon/content:content",
     "//components/guest_view/browser",
     "//components/guest_view/common:mojom",
     "//components/guest_view/renderer",

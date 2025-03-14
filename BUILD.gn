@@ -45,9 +45,9 @@ static_library("aloha_webview_lib") {
   ]
 
   public_deps = [
+    "//aloha/browser/client:aloha_content_client",
     "//aloha/browser/devtools:aloha_devtools",
     "//aloha/browser/ui/views:views",
-    "//aloha/browser/client:aloha_content_client",
   ]
 
   deps = [
@@ -185,11 +185,18 @@ mojom("browser_mojo_bindings") {
 executable("aloha") {
   testonly = true
 
-  sources = [ "app/main.cc" ]
-  
+  sources = [
+    "app/aloha_content_main_delegate.cc",
+    "app/aloha_content_main_delegate.h",
+    "app/aloha_main.cc",
+    "app/aloha_main.h",
+    "app/main.cc",
+  ]
+
   deps = [
     ":aloha_webview_lib",
     "//aloha/browser/client:aloha_content_client",
+    "//aloha/common:common",
     "//base",
     "//content/public/app",
     "//ui/aura:aura",
@@ -204,7 +211,7 @@ executable("aloha") {
       "//content:sandbox_helper_win",
       "//sandbox/win:sandbox",
     ]
-    sources += ["resources/aloha_exe.rc"]
+    sources += [ "resources/aloha_exe.rc" ]
   }
 
   if (is_mac) {

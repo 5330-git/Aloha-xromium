@@ -12,8 +12,6 @@ source_set("aloha_content_client") {
     "aloha_content_browser_client.h",
     "aloha_content_client_main_parts.cc",
     "aloha_content_client_main_parts.h",
-    "aloha_content_main_delegate.cc",
-    "aloha_content_main_delegate.h",
   ]
 
   if (is_chromeos_ash) {
@@ -32,6 +30,9 @@ source_set("aloha_content_client") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
+    "//components/favicon/content:content",
+    "//components/favicon/core:core",
+    "//components/prefs:prefs",
     "//components/renderer_context_menu:renderer_context_menu",
     "//content",
     "//content/shell:content_shell_lib",

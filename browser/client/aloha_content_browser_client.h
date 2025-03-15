@@ -6,10 +6,14 @@
 #define ALOHA_VIEWS_CONTENT_CLIENT_VIEWS_CONTENT_BROWSER_CLIENT_H_
 
 #include <memory>
+#include <vector>
 
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/shell/browser/shell_browser_context.h"
@@ -55,12 +59,51 @@ class AlohaContentBrowserClient : public content::ContentBrowserClient {
   // NetworkContext 相关，包括网路数据的落盘
   // 被：StoragePartitionImpl::InitNetworkContext() 调用
   void ConfigureNetworkContextParams(
-    content::BrowserContext* context,
-    bool in_memory,
-    const base::FilePath& relative_partition_path,
-    network::mojom::NetworkContextParams* network_context_params,
-    cert_verifier::mojom::CertVerifierCreationParams*
-        cert_verifier_creation_params) override;
+      content::BrowserContext* context,
+      bool in_memory,
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params,
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override;
+
+  bool IsHandledURL(const GURL& url) override;
+  void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
+      content::BrowserContext* context,
+      NonNetworkURLLoaderFactoryMap* factories) override;
+
+  // 目前确定这个接口不会负责创建Response
+  void RegisterNonNetworkSubresourceURLLoaderFactories(
+      int render_process_id,
+      int render_frame_id,
+      const std::optional<::url::Origin>& request_initiator_origin,
+      NonNetworkURLLoaderFactoryMap* factories) override;
+
+  // 目前确定这个接口不会影响通过 URLLoaderRequestInterceptor
+  // 拦截处理并响应的资源请求流程
+  bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
+                              const std::string& scheme) override;
+
+  void GetAdditionalAllowedSchemesForFileSystem(
+      std::vector<std::string>* additial_allowed_schemes) override;
+
+  // 解决日志中的问题："Empty path. Failed initializing First-Party Sets
+  // database."
+  base::FilePath GetFirstPartySetsDirectory() override;
+
+  // 实现 aloha:// 协议的核心接口，通过注册的
+  // content::URLLoaderRequestInterceptor 拦截处理并响应 aloha:// 协议的请求
+  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+  WillCreateURLLoaderRequestInterceptors(
+      content::NavigationUIData* navigation_ui_data,
+      content::FrameTreeNodeId frame_tree_node_id,
+      int64_t navigation_id,
+      bool force_no_https_upgrade,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
+      override;
+
+  // TODO(yeyun.anton): 实现这个接口
+  //   base::FilePath GetLoggingFileName(const base::CommandLine& command_line)
+  //   override;
 
  private:
   raw_ptr<AlohaContentClientMainParts> aloha_content_client_main_parts_ =

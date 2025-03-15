@@ -175,13 +175,17 @@ MainWidgetDelegateView::MainWidgetDelegateView() {
   layout->SetFlexForView(tabbed_pane_, 1);
 
   // 添加 tab 以测试
-  for (int i = 0; i < 5; i++) {
-    auto webapp_view = std::make_unique<WebAppContentView>(
-        GURL(AlohaBrowserContentView::kAlohaHomeURL), this);
-    webapp_view->Init();
-    AddBrowserContentView("Aloha Main" + std::to_string(i),
-                          std::move(webapp_view));
-  }
+  auto webapp_view_with_file_scheme = std::make_unique<WebAppContentView>(
+      GURL(AlohaBrowserContentView::kAlohaHomeURLWithFileScheme), this);
+  webapp_view_with_file_scheme->Init();
+  AddBrowserContentView("Aloha Main" + std::string("with file scheme"),
+                        std::move(webapp_view_with_file_scheme));
+
+  auto webapp_view_with_aloha_scheme = std::make_unique<WebAppContentView>(
+      GURL(AlohaBrowserContentView::kAlohaHomeWithAlohaScheme), this);
+  webapp_view_with_aloha_scheme->Init();
+  AddBrowserContentView("Aloha Main" + std::string("with aloha scheme"),
+                        std::move(webapp_view_with_aloha_scheme));
 }
 
 void MainWidgetDelegateView::AddBrowserContentView(
@@ -220,8 +224,8 @@ MainWidgetDelegateView::MoveOutBrowserContentView(
         // TODO(yeyun.anton):
         // 为被移除的区域添加内容，未来通过点击定位到被移除且独立出来的窗口上 将
         // content view 移除掉，并存储到容器中，维护一个 content 到 tab 的映射
-        auto tab_view =
-            tabbed_pane_->GetContentsContainer()->RemoveChildViewT(content_view);
+        auto tab_view = tabbed_pane_->GetContentsContainer()->RemoveChildViewT(
+            content_view);
         tab->SetContents(tabbed_pane_->GetContentsContainer()->AddChildView(
             std::make_unique<views::MessageBoxView>()));
 

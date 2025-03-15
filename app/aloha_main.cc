@@ -12,6 +12,7 @@ int AlohaMain(HINSTANCE instance, sandbox::SandboxInterfaceInfo* sandbox_info) {
   content::ContentMainParams params(&delegate);
   params.instance = instance;
   params.sandbox_info = sandbox_info;
+  params.minimal_browser_mode = false;
 
   return content::ContentMain(std::move(params));
 }

@@ -10,6 +10,7 @@
 #include "aloha/browser/ui/web/browser.h"
 #include "aloha/browser/ui/web/browser.mojom.h"
 #include "aloha/browser/ui/web/webshell_guest_view.h"
+#include "aloha/common/aloha_constants.h"
 #include "base/command_line.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "content/public/browser/content_browser_client.h"
@@ -85,12 +86,14 @@ std::optional<gfx::ImageSkia> ContentBrowserClient::GetProductLogo() {
   return std::nullopt;
 }
 
-void ContentBrowserClient::AppendExtraCommandLineSwitches(base::CommandLine* command_line,
-                                    int child_process_id) {
-  // 检查主进程是否包含 --use-pure-webview 参数
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch("use-webui")) {
+void ContentBrowserClient::AppendExtraCommandLineSwitches(
+    base::CommandLine* command_line,
+    int child_process_id) {
+  // 检查主进程是否包含 use-webui参数
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          aloha::switches::kUseWebUI)) {
     // 将参数传递给子进程
-    command_line->AppendSwitch("use-webui");
+    command_line->AppendSwitch(aloha::switches::kUseWebUI);
   }
   LOG(INFO) << "ChildProcessId:" << child_process_id;
 }

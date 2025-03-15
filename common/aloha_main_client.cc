@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "aloha/common/aloha_paths.h"
 #include "aloha/grit/aloha_resources.h"
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
@@ -94,6 +95,8 @@ AlohaMainClient::AlohaMainClient() = default;
 AlohaMainClient::~AlohaMainClient() {}
 
 int AlohaMainClient::PreAlohaMain() {
+  // 需要在足够早的时间初始化 PathService
+  aloha::path_service::RegisterAlohaPathProvider();
   // TEMP USING START
   // 初始化 PrefService 和 OSCrypt
   // 目前还未实现 Preferences 相关的功能（即 PrefService 相关）所以 先临时写个

@@ -1,10 +1,11 @@
 #include "aloha/common/aloha_constants.h"
+
 #include "base/files/file_path.h"
+
 
 #define FPL FILE_PATH_LITERAL
 namespace aloha {
 const char kProductName[] = "Aloha-Xromium";
-
 
 const base::FilePath::CharType kBrowserProcessExecutableName[] =
     FPL("aloha.exe");
@@ -33,5 +34,14 @@ const base::FilePath::CharType kReportingAndNelStoreFilename[] =
     FPL("Reporting and NEL");
 const base::FilePath::CharType kSCTAuditingPendingReportsFileName[] =
     FPL("SCT Auditing Pending Reports");
+
+namespace url {
+const char kAlohaScheme[] = "aloha";
+}
+
+namespace  switches  {
+    const char kUseWebUI[] = "use-webui";
+    const char kEnableLoggingFile[] = "enable-logging-file";
+}
 
 }  // namespace aloha

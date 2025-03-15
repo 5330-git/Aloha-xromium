@@ -27,6 +27,14 @@ extern const base::FilePath::CharType kTransportSecurityPersisterFilename[];
 extern const base::FilePath::CharType kReportingAndNelStoreFilename[];
 extern const base::FilePath::CharType kSCTAuditingPendingReportsFileName[];
 
+namespace url {
+  extern const char kAlohaScheme[];
+}
+
+namespace switches {
+  extern const char kUseWebUI[];
+  extern const char kEnableLoggingFile[];
+}
 }  // namespace aloha
 
 #endif  // ALOHA_COMMON_ALOHA_CONSTANTS_H_

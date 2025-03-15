@@ -18,7 +18,9 @@ namespace aloha {
 
 class AlohaBrowserContentView : public BrowserContentView {
  public:
-  static constexpr char kAlohaHomeURL[] =
+  static constexpr char kAlohaHomeWithAlohaScheme[] =
+      "aloha://demo/XXX";
+  static constexpr char kAlohaHomeURLWithFileScheme[] =
       "file:///D:/codes/build-chromium/chromium/src/aloha/resources/browser/"
       "aloha-app-main/dist/index.html";
   struct SubViews {

@@ -8,6 +8,7 @@
 
 #include "aloha/browser/client/aloha_content_browser_client.h"
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
+#include "aloha/common/aloha_constants.h"
 #include "aloha/common/aloha_main_client.h"
 #include "aloha/common/aloha_paths.h"
 #include "base/command_line.h"
@@ -46,18 +47,25 @@ std::optional<int> AlohaContentMainDelegate::BasicStartupComplete() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
+      command_line.GetSwitchValueASCII(::switches::kProcessType);
 
   logging::LoggingSettings settings;
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+  // 如果增加了参数 --enable-logging-file 则会将日志输出到文件中
+  if (command_line.HasSwitch(aloha::switches::kEnableLoggingFile)) {
+    settings.logging_dest |= logging::LOG_TO_FILE;
+    settings.log_file_path =
+        base::PathService::CheckedGet(path_service::ALOHA_USER_DATA_DIR)
+            .AppendASCII("aloha.log")
+            .value()
+            .c_str();
+  }
   bool success = logging::InitLogging(settings);
   CHECK(success);
 #if BUILDFLAG(IS_WIN)
   logging::LogEventProvider::Initialize(kViewsContentClientProviderName);
 #endif
-
-  aloha::path_service::RegisterAlohaPathProvider();
 
   return std::nullopt;
 }

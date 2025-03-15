@@ -48,6 +48,7 @@ static_library("aloha_webview_lib") {
     "//aloha/browser/client:aloha_content_client",
     "//aloha/browser/devtools:aloha_devtools",
     "//aloha/browser/ui/views:views",
+    "//aloha/common:common",
   ]
 
   deps = [

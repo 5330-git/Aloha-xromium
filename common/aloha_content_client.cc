@@ -2,6 +2,7 @@
 
 #include <string_view>
 
+#include "aloha/common/aloha_constants.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -18,7 +19,7 @@ AlohaContentClient::AlohaContentClient() = default;
 AlohaContentClient::~AlohaContentClient() {}
 
 std::u16string AlohaContentClient::GetLocalizedString(int message_id) {
-  if (switches::IsRunWebTestsSwitchPresent()) {
+  if (::switches::IsRunWebTestsSwitchPresent()) {
     switch (message_id) {
       case IDS_FORM_OTHER_DATE_LABEL:
         return u"<<OtherDate>>";
@@ -71,10 +72,18 @@ void AlohaContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->local_schemes.push_back(url::kContentScheme);
 #endif
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kTestRegisterStandardScheme)) {
+  if (command_line->HasSwitch(::switches::kTestRegisterStandardScheme)) {
     std::string scheme = command_line->GetSwitchValueASCII(
-        switches::kTestRegisterStandardScheme);
+        ::switches::kTestRegisterStandardScheme);
     schemes->standard_schemes.emplace_back(std::move(scheme));
   }
+
+  // 将 aloha:// 加入到标准协议中。
+  schemes->standard_schemes.push_back(aloha::url::kAlohaScheme);
+  schemes->secure_schemes.push_back(aloha::url::kAlohaScheme);
+  schemes->cors_enabled_schemes.push_back(aloha::url::kAlohaScheme);
+  schemes->savable_schemes.push_back(aloha::url::kAlohaScheme);
+  // 允许加载本地资源。
+  schemes->local_schemes.push_back(aloha::url::kAlohaScheme);
 }
 }  // namespace aloha

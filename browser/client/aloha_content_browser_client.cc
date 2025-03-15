@@ -6,10 +6,12 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
 #include "aloha/browser/devtools/devtools_manager_delegate.h"
 #include "aloha/browser/ui/views/aloha_web_contents_view_delegate_views.h"
+#include "aloha/browser/url/demo/demo_url_loader_request_interceptor.h"
 #include "aloha/common/aloha_constants.h"
 #include "aloha/common/aloha_main_client.h"
 #include "aloha/common/aloha_paths.h"
@@ -18,23 +20,155 @@
 #include "aloha_content_client_main_parts.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/file_url_loader.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "content/shell/browser/shell_paths.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
+#include "url/url_constants.h"
 
 namespace aloha {
+namespace {
+
+// // URL 拦截器，用于拦截 aloha:// 协议的请求
+// // 参考 components\pdf\browser\pdf_url_loader_request_interceptor.cc 实现
+// class AlohaURLLoaderRequestInterceptor
+//     : public content::URLLoaderRequestInterceptor {
+//  public:
+//   void MaybeCreateLoader(
+//       const network::ResourceRequest& resource_request,
+//       content::BrowserContext* browser_context,
+//       content::URLLoaderRequestInterceptor::LoaderCallback callback) override
+//       {
+//     // 检查请求的 URL 是否为自定义协议
+//     LOG(INFO) << "AlohaURLLoaderRequestInterceptor::MaybeCreateLoader";
+//     if (resource_request.url.scheme() == aloha::url::kAlohaScheme) {
+//       // 创建自定义的 URLLoader 处理请求
+//       mojo::PendingRemote<network::mojom::URLLoader> loader;
+//       mojo::PendingRemote<network::mojom::URLLoaderClient> client;
+
+//       auto request_handler =
+//           [](const network::ResourceRequest& resource_request,
+//              mojo::PendingReceiver<network::mojom::URLLoader> loader,
+//              mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+//             // Response Write
+//             auto response = network::mojom::URLResponseHead::New();
+//             response->headers =
+//             base::MakeRefCounted<net::HttpResponseHeaders>(
+//                 "HTTP/1.1 200 OK");
+//             // TODO(yeyun.anton):CORS Allow
+
+//             response->mime_type = "text/html";
+
+//             mojo::ScopedDataPipeProducerHandle producer_handle;
+//             mojo::ScopedDataPipeConsumerHandle consumer_handle;
+
+//             auto remote_url_loader_client =
+//                 std::make_unique<mojo::Remote<network::mojom::URLLoaderClient>>(
+//                     std::move(client));
+//             if (mojo::CreateDataPipe(nullptr, producer_handle,
+//                                      consumer_handle) != MOJO_RESULT_OK) {
+//               // 创建数据管道失败
+//               (*remote_url_loader_client)
+//                   ->OnComplete(network::URLLoaderCompletionStatus(
+//                       net::ERR_INSUFFICIENT_RESOURCES));
+//               return;
+//             }
+
+//             (*remote_url_loader_client)
+//                 ->OnReceiveResponse(std::move(response),
+//                                     std::move(consumer_handle),
+//                                     std::nullopt);
+//             // Write HTML content to the data pipe
+//             auto producer = std::make_unique<mojo::DataPipeProducer>(
+//                 std::move(producer_handle));
+//             mojo::DataPipeProducer* raw_producer_ptr = producer.get();
+//             constexpr char kTestAlohaResponse[] = R"(
+//               <html>
+//               <body>
+//               <h1>Hello World</h1>
+//               <button
+//               onclick=window.open('aloha://test')>aloha://test</button>
+//               <button
+//               onclick=window.open('aloha://test2')>aloha://test2</button> <a
+//               href='file:///D:/codes/build-chromium/chromium/src/aloha/resources/browser/aloha-app-main/dist/index.html'>to
+//               main page from file</a>
+//               </body>
+//               </html>
+//               )";
+//             raw_producer_ptr->Write(
+//                 std::make_unique<mojo::StringDataSource>(
+//                     kTestAlohaResponse,
+//                     mojo::StringDataSource::AsyncWritingMode::
+//                         STRING_STAYS_VALID_UNTIL_COMPLETION),
+//                 base::BindOnce<>(
+//                     [](std::unique_ptr<mojo::DataPipeProducer> producer,
+//                        std::unique_ptr<
+//                            mojo::Remote<network::mojom::URLLoaderClient>>
+//                            remote_url_loader_client,
+//                        MojoResult result) {
+//                       // 把 producer 和 remote_url_loader_client
+//                       的所有权移入到
+//                       // lambda 表达式中，离开时销毁
+//                       LOG(INFO) << "Write Complete";
+//                       if (result != MOJO_RESULT_OK) {
+//                         LOG(INFO) << "Write Error";
+//                         (*remote_url_loader_client)
+//                             ->OnComplete(network::URLLoaderCompletionStatus(
+//                                 net::ERR_FAILED));
+//                       } else {
+//                         LOG(INFO) << "Write Success";
+//                         (*remote_url_loader_client)
+//                             ->OnComplete(
+//                                 network::URLLoaderCompletionStatus(net::OK));
+//                       }
+//                     },
+//                     std::move(producer),
+//                     std::move(remote_url_loader_client)));
+//           };
+
+//       std::move(callback).Run(base::BindOnce<>(request_handler));
+//       return;
+//     }
+
+//     // 如果不处理该请求，则传入空的 RequestHandler
+//     std::move(callback).Run(base::NullCallback());
+//     //
+//   }
+
+//   bool MaybeCreateLoaderForResponse(
+//       const network::URLLoaderCompletionStatus& status,
+//       const network::ResourceRequest& request,
+//       network::mojom::URLResponseHeadPtr* response_head,
+//       mojo::ScopedDataPipeConsumerHandle* response_body,
+//       mojo::PendingRemote<network::mojom::URLLoader>* loader,
+//       mojo::PendingReceiver<network::mojom::URLLoaderClient>*
+//       client_receiver, blink::ThrottlingURLLoader* url_loader) override {
+//     LOG(INFO)
+//         << "AlohaURLLoaderRequestInterceptor::MaybeCreateLoaderForResponse";
+//     return false;
+//   }
+// };
+
+}  // namespace
 
 AlohaContentBrowserClient::~AlohaContentBrowserClient() {}
 
@@ -163,6 +297,65 @@ void AlohaContentBrowserClient::ConfigureNetworkContextParams(
   // network_context_params->initial_ssl_config;
 
   // Definetions End
+}
+bool AlohaContentBrowserClient::IsHandledURL(const GURL& url) {
+  if (url.SchemeIs(aloha::url::kAlohaScheme)) {
+    return true;
+  }
+  return false;
+}
+void AlohaContentBrowserClient::
+    RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
+        content::BrowserContext* browser_context,
+        NonNetworkURLLoaderFactoryMap* factories) {}
+
+// TODO(yeyun.anton): 检查是否需要实现
+void AlohaContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
+    int render_process_id,
+    int render_frame_id,
+    const std::optional<::url::Origin>& request_initiator_origin,
+    NonNetworkURLLoaderFactoryMap* factories) {
+  content::ContentBrowserClient::
+      RegisterNonNetworkSubresourceURLLoaderFactories(
+          render_process_id, render_process_id, request_initiator_origin,
+          factories);
+}
+
+// TODO(yeyun.anton): 检查是否需要实现
+bool AlohaContentBrowserClient::HasCustomSchemeHandler(
+    content::BrowserContext* browser_context,
+    const std::string& scheme) {
+  LOG(INFO) << "HasCustomSchemeHandler";
+  return content::ContentBrowserClient::HasCustomSchemeHandler(browser_context,
+                                                               scheme);
+}
+
+void AlohaContentBrowserClient::GetAdditionalAllowedSchemesForFileSystem(
+    std::vector<std::string>* additial_allowed_schemes) {
+  additial_allowed_schemes->push_back(aloha::url::kAlohaScheme);
+}
+
+base::FilePath AlohaContentBrowserClient::GetFirstPartySetsDirectory() {
+  base::FilePath user_data_dir;
+  base::PathService::Get(aloha::path_service::ALOHA_USER_DATA_DIR,
+                         &user_data_dir);
+  return user_data_dir;
+}
+std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+AlohaContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+    content::NavigationUIData* navigation_ui_data,
+    content::FrameTreeNodeId frame_tree_node_id,
+    int64_t navigation_id,
+    bool force_no_https_upgrade,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
+  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+      interceptors;
+
+  std::unique_ptr<content::URLLoaderRequestInterceptor> interceptor =
+      std::make_unique<aloha::url::DemoURLLoaderRequestInterceptor>();
+  interceptors.push_back(std::move(interceptor));
+
+  return interceptors;
 }
 
 }  // namespace aloha

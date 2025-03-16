@@ -1,4 +1,3 @@
-
 #include "aloha/common/aloha_paths.h"
 
 #include "aloha/common/aloha_constants.h"
@@ -26,12 +25,27 @@ void GetDefaultUserDataDirectory(base::FilePath* result) {
   base::CreateDirectory(*result);
 }
 
+void GetWebAppPath(base::FilePath* result, std::string app_name) {
+  base::PathService::Get(ALOHA_WEB_APP_RESOURCES_DIR, result);
+  *result = result->AppendASCII(app_name).AppendASCII("index.html");
+}
+
 bool AlohaPathProvider(int key, base::FilePath* result) {
   base::FilePath cur;
 
   switch (key) {
     case aloha::path_service::ALOHA_USER_DATA_DIR: {
       GetDefaultUserDataDirectory(result);
+      return true;
+    }
+    case ALOHA_WEB_APP_RESOURCES_DIR: {
+      base::FilePath exe_path;
+      if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
+        NOTREACHED() << "Could not get path to executable.";
+      }
+      *result = exe_path.DirName();
+      *result =
+          result->Append(aloha::webapp::kWebAppDirName);
       return true;
     }
     default:

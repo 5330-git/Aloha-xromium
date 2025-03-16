@@ -12,6 +12,8 @@
 #include "aloha/browser/devtools/devtools_manager_delegate.h"
 #include "aloha/browser/devtools/devtools_server.h"
 #include "aloha/browser/webui_controller_factory.h"
+#include "aloha/common/aloha_constants.h"
+#include "aloha/common/aloha_paths.h"
 #include "aloha/grit/aloha_resources.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -121,13 +123,12 @@ int BrowserMainParts::PreMainMessageLoopRun() {
     return 0;
   }
   LOG(INFO) << "Going to CreatAdnShowWindows from 'file://'";
-  CreateAndShowWindow(
-      // GURL("aloha://main"),
-      GURL("file:///D:/codes/build-chromium/chromium/src/aloha/resources/"
-           "browser/aloha-app-main/dist/index.html"),
+  base::FilePath aloha_home_path;
+  aloha::path_service::GetWebAppPath(&aloha_home_path,
+                                     webapp::internal::kAlohaHome);
 
-      // GURL("https://kimi.moonshot.cn/"),
-      l10n_util::GetStringUTF16(IDS_ALOHA_WINDOW_TITLE));
+  GURL url = GURL("file://" + aloha_home_path.MaybeAsASCII());
+  CreateAndShowWindow(url, l10n_util::GetStringUTF16(IDS_ALOHA_WINDOW_TITLE));
 
   return 0;
 }

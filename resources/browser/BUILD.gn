@@ -4,29 +4,35 @@
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
+# --use-webui --webshell 参数下需要的前端资源：
 build_webui("build") {
   grd_prefix = "aloha_browser"
 
   static_files = [
-    # "ai-agent-dialog/dist/dialog-index.css",
-    # "ai-agent-dialog/dist/favicon.ico",
-    # "ai-agent-dialog/dist/index.html",
-    
     "index.css",
     "index.html",
   ]
 
-  # non_web_component_files = [ "ai-agent-dialog/dist/dialog-index.js"]
-  non_web_component_files = [ "index.ts"]
+  non_web_component_files = [ "index.ts" ]
 
-  mojo_files = [
-    "$root_gen_dir/aloha/browser/ui/web/browser.mojom-webui.ts",
-  ]
+  mojo_files = [ "$root_gen_dir/aloha/browser/ui/web/browser.mojom-webui.ts" ]
 
-  mojo_files_deps =
-      [ "//aloha:browser_mojo_bindings_ts__generator" ]
+  mojo_files_deps = [ "//aloha:browser_mojo_bindings_ts__generator" ]
 
   ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
 
   grit_output_dir = "$target_gen_dir"
+}
+
+
+# 构建基于 node.js 开发的 webapp 前端资源
+action("build_webapp_resources") {
+  script = "//aloha/tools/webapp_builder/runme.py"
+  args = [
+    "--target_gen_dir=$target_gen_dir",
+    "--root_gen_dir=$root_gen_dir",
+    "--root_build_dir=$root_build_dir",
+  ]
+  outputs = [ "$target_gen_dir/build_webapp_resources.log" ]
+  # 默认使用 depot_tools 中的 python3
 }

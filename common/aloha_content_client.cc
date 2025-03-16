@@ -13,6 +13,7 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "url/url_util.h"
 
 namespace aloha {
 AlohaContentClient::AlohaContentClient() = default;
@@ -78,12 +79,20 @@ void AlohaContentClient::AddAdditionalSchemes(Schemes* schemes) {
     schemes->standard_schemes.emplace_back(std::move(scheme));
   }
 
+  // 有关 schemes 的更多信息，请参阅：url\url_util.cc: SchemeRegistry
   // 将 aloha:// 加入到标准协议中。
   schemes->standard_schemes.push_back(aloha::url::kAlohaScheme);
   schemes->secure_schemes.push_back(aloha::url::kAlohaScheme);
   schemes->cors_enabled_schemes.push_back(aloha::url::kAlohaScheme);
   schemes->savable_schemes.push_back(aloha::url::kAlohaScheme);
+  schemes->service_worker_schemes.push_back(aloha::url::kAlohaScheme);
+  schemes->csp_bypassing_schemes.push_back(aloha::url::kAlohaScheme);
   // 允许加载本地资源。
   schemes->local_schemes.push_back(aloha::url::kAlohaScheme);
+  schemes->local_schemes.push_back(aloha::url::kAlohaDemoScheme);
+
+  // 允许使用 WebStorage。(Cookies、)
+  ::url::AddWebStorageScheme(aloha::url::kAlohaScheme);
+  ::url::AddWebStorageScheme(aloha::url::kAlohaDemoScheme);
 }
 }  // namespace aloha

@@ -11,6 +11,8 @@
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
 #include "aloha/browser/devtools/devtools_manager_delegate.h"
 #include "aloha/browser/ui/views/aloha_web_contents_view_delegate_views.h"
+#include "aloha/browser/url/demo/demo_navigation_url_loader_factory.h"
+#include "aloha/browser/url/demo/demo_sub_resources_url_loader_factory.h"
 #include "aloha/browser/url/demo/demo_url_loader_request_interceptor.h"
 #include "aloha/common/aloha_constants.h"
 #include "aloha/common/aloha_main_client.h"
@@ -46,129 +48,6 @@
 #include "url/url_constants.h"
 
 namespace aloha {
-namespace {
-
-// // URL 拦截器，用于拦截 aloha:// 协议的请求
-// // 参考 components\pdf\browser\pdf_url_loader_request_interceptor.cc 实现
-// class AlohaURLLoaderRequestInterceptor
-//     : public content::URLLoaderRequestInterceptor {
-//  public:
-//   void MaybeCreateLoader(
-//       const network::ResourceRequest& resource_request,
-//       content::BrowserContext* browser_context,
-//       content::URLLoaderRequestInterceptor::LoaderCallback callback) override
-//       {
-//     // 检查请求的 URL 是否为自定义协议
-//     LOG(INFO) << "AlohaURLLoaderRequestInterceptor::MaybeCreateLoader";
-//     if (resource_request.url.scheme() == aloha::url::kAlohaScheme) {
-//       // 创建自定义的 URLLoader 处理请求
-//       mojo::PendingRemote<network::mojom::URLLoader> loader;
-//       mojo::PendingRemote<network::mojom::URLLoaderClient> client;
-
-//       auto request_handler =
-//           [](const network::ResourceRequest& resource_request,
-//              mojo::PendingReceiver<network::mojom::URLLoader> loader,
-//              mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-//             // Response Write
-//             auto response = network::mojom::URLResponseHead::New();
-//             response->headers =
-//             base::MakeRefCounted<net::HttpResponseHeaders>(
-//                 "HTTP/1.1 200 OK");
-//             // TODO(yeyun.anton):CORS Allow
-
-//             response->mime_type = "text/html";
-
-//             mojo::ScopedDataPipeProducerHandle producer_handle;
-//             mojo::ScopedDataPipeConsumerHandle consumer_handle;
-
-//             auto remote_url_loader_client =
-//                 std::make_unique<mojo::Remote<network::mojom::URLLoaderClient>>(
-//                     std::move(client));
-//             if (mojo::CreateDataPipe(nullptr, producer_handle,
-//                                      consumer_handle) != MOJO_RESULT_OK) {
-//               // 创建数据管道失败
-//               (*remote_url_loader_client)
-//                   ->OnComplete(network::URLLoaderCompletionStatus(
-//                       net::ERR_INSUFFICIENT_RESOURCES));
-//               return;
-//             }
-
-//             (*remote_url_loader_client)
-//                 ->OnReceiveResponse(std::move(response),
-//                                     std::move(consumer_handle),
-//                                     std::nullopt);
-//             // Write HTML content to the data pipe
-//             auto producer = std::make_unique<mojo::DataPipeProducer>(
-//                 std::move(producer_handle));
-//             mojo::DataPipeProducer* raw_producer_ptr = producer.get();
-//             constexpr char kTestAlohaResponse[] = R"(
-//               <html>
-//               <body>
-//               <h1>Hello World</h1>
-//               <button
-//               onclick=window.open('aloha://test')>aloha://test</button>
-//               <button
-//               onclick=window.open('aloha://test2')>aloha://test2</button> <a
-//               href='file:///D:/codes/build-chromium/chromium/src/aloha/resources/browser/aloha-app-main/dist/index.html'>to
-//               main page from file</a>
-//               </body>
-//               </html>
-//               )";
-//             raw_producer_ptr->Write(
-//                 std::make_unique<mojo::StringDataSource>(
-//                     kTestAlohaResponse,
-//                     mojo::StringDataSource::AsyncWritingMode::
-//                         STRING_STAYS_VALID_UNTIL_COMPLETION),
-//                 base::BindOnce<>(
-//                     [](std::unique_ptr<mojo::DataPipeProducer> producer,
-//                        std::unique_ptr<
-//                            mojo::Remote<network::mojom::URLLoaderClient>>
-//                            remote_url_loader_client,
-//                        MojoResult result) {
-//                       // 把 producer 和 remote_url_loader_client
-//                       的所有权移入到
-//                       // lambda 表达式中，离开时销毁
-//                       LOG(INFO) << "Write Complete";
-//                       if (result != MOJO_RESULT_OK) {
-//                         LOG(INFO) << "Write Error";
-//                         (*remote_url_loader_client)
-//                             ->OnComplete(network::URLLoaderCompletionStatus(
-//                                 net::ERR_FAILED));
-//                       } else {
-//                         LOG(INFO) << "Write Success";
-//                         (*remote_url_loader_client)
-//                             ->OnComplete(
-//                                 network::URLLoaderCompletionStatus(net::OK));
-//                       }
-//                     },
-//                     std::move(producer),
-//                     std::move(remote_url_loader_client)));
-//           };
-
-//       std::move(callback).Run(base::BindOnce<>(request_handler));
-//       return;
-//     }
-
-//     // 如果不处理该请求，则传入空的 RequestHandler
-//     std::move(callback).Run(base::NullCallback());
-//     //
-//   }
-
-//   bool MaybeCreateLoaderForResponse(
-//       const network::URLLoaderCompletionStatus& status,
-//       const network::ResourceRequest& request,
-//       network::mojom::URLResponseHeadPtr* response_head,
-//       mojo::ScopedDataPipeConsumerHandle* response_body,
-//       mojo::PendingRemote<network::mojom::URLLoader>* loader,
-//       mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-//       client_receiver, blink::ThrottlingURLLoader* url_loader) override {
-//     LOG(INFO)
-//         << "AlohaURLLoaderRequestInterceptor::MaybeCreateLoaderForResponse";
-//     return false;
-//   }
-// };
-
-}  // namespace
 
 AlohaContentBrowserClient::~AlohaContentBrowserClient() {}
 
@@ -291,6 +170,17 @@ void AlohaContentBrowserClient::ConfigureNetworkContextParams(
   network_context_params->restore_old_session_cookies = false;
   network_context_params->persist_session_cookies = true;
   network_context_params->enable_encrypted_cookies = true;
+  // TODO(yeyun.anton): 将 kAlohaScheme 放到 CookieableScheme 中
+  // 参见：net::CookieManager::AllowFileSchemeCookies
+  // 这会比较困难，因为内核代码并没有预留接口，除非修改内核代码，但这样会增加与内核代码的耦合度，
+  // 后续需要评估是否需要在C++/JavaScript混合应用（aloha://apps）下使用
+  // cookies 相关的特性
+  // network_context_params->cookie_manager_params
+  //     ->secure_origin_cookies_allowed_schemes = {aloha::url::kAlohaScheme};
+  // network_context_params->cookie_manager_params
+  //     ->matching_scheme_cookies_allowed_schemes = {aloha::url::kAlohaScheme};
+  // network_context_params->cookie_manager_params
+  //     ->third_party_cookies_allowed_schemes = {aloha::url::kAlohaScheme};
 
   // network_context_params->enable_locking_cookie_database = true;
 
@@ -307,7 +197,12 @@ bool AlohaContentBrowserClient::IsHandledURL(const GURL& url) {
 void AlohaContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryMap* factories) {}
+        NonNetworkURLLoaderFactoryMap* factories) {
+  LOG(INFO) << "RegisterNonNetworkWorkerMainResourceURLLoaderFactories";
+  content::ContentBrowserClient::
+      RegisterNonNetworkWorkerMainResourceURLLoaderFactories(browser_context,
+                                                             factories);
+}
 
 // TODO(yeyun.anton): 检查是否需要实现
 void AlohaContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
@@ -315,10 +210,18 @@ void AlohaContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_frame_id,
     const std::optional<::url::Origin>& request_initiator_origin,
     NonNetworkURLLoaderFactoryMap* factories) {
+  LOG(INFO) << "RegisterNonNetworkSubresourceURLLoaderFactories";
+  for (auto& [url, factory] : *factories) {
+    LOG(INFO) << url << " : " << factory.version();
+  }
   content::ContentBrowserClient::
       RegisterNonNetworkSubresourceURLLoaderFactories(
           render_process_id, render_process_id, request_initiator_origin,
           factories);
+  auto demo_sub_resources_url_loader_factory =
+      aloha::url::DemoSubResourcesURLLoaderFactory::Create();
+  factories->insert({aloha::url::kAlohaDemoScheme,
+                     std::move(demo_sub_resources_url_loader_factory)});
 }
 
 // TODO(yeyun.anton): 检查是否需要实现
@@ -332,6 +235,7 @@ bool AlohaContentBrowserClient::HasCustomSchemeHandler(
 
 void AlohaContentBrowserClient::GetAdditionalAllowedSchemesForFileSystem(
     std::vector<std::string>* additial_allowed_schemes) {
+  LOG(INFO) << "GetAdditionalAllowedSchemesForFileSystem";
   additial_allowed_schemes->push_back(aloha::url::kAlohaScheme);
 }
 
@@ -356,6 +260,17 @@ AlohaContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   interceptors.push_back(std::move(interceptor));
 
   return interceptors;
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+AlohaContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
+    const std::string& scheme,
+    content::FrameTreeNodeId frame_tree_node_id) {
+  if (scheme == aloha::url::kAlohaDemoScheme) {
+    // TODO(yeyun.anton): 创建 Aloha 协议的加载器工厂
+    return aloha::url::DemoNavigationURLLoaderFactory::Create();
+  }
+  return {};
 }
 
 }  // namespace aloha

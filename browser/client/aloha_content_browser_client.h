@@ -67,11 +67,15 @@ class AlohaContentBrowserClient : public content::ContentBrowserClient {
           cert_verifier_creation_params) override;
 
   bool IsHandledURL(const GURL& url) override;
+
+  // TODO(yeyun.anton): 调研该接口的作用
+  // 该接口只在 WorkerScriptFetcher::CreateFactoryBundle 被引用到
   void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       content::BrowserContext* context,
       NonNetworkURLLoaderFactoryMap* factories) override;
 
-  // 目前确定这个接口不会负责创建Response
+  // 可以通过该接口注册额外的 URL 加载器工厂，来处理子资源的请求
+  // 发生在 Navigation 请求完毕之后。
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
@@ -83,6 +87,7 @@ class AlohaContentBrowserClient : public content::ContentBrowserClient {
   bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
                               const std::string& scheme) override;
 
+  // TODO(yeyun.anton): 调研该接口的作用
   void GetAdditionalAllowedSchemesForFileSystem(
       std::vector<std::string>* additial_allowed_schemes) override;
 
@@ -91,7 +96,10 @@ class AlohaContentBrowserClient : public content::ContentBrowserClient {
   base::FilePath GetFirstPartySetsDirectory() override;
 
   // 实现 aloha:// 协议的核心接口，通过注册的
-  // content::URLLoaderRequestInterceptor 拦截处理并响应 aloha:// 协议的请求
+  // URLLoaderRequestInterceptor
+  // 拦截处理并响应相关的请求。拦截器的优先级要高于默认的由
+  // CreateNonNetworkNavigationURLLoaderFactory 创建的 URL 加载器工厂
+  // 详细可见 `aloha/url/demo/` 下的代码和注释
   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
   WillCreateURLLoaderRequestInterceptors(
       content::NavigationUIData* navigation_ui_data,
@@ -100,6 +108,11 @@ class AlohaContentBrowserClient : public content::ContentBrowserClient {
       bool force_no_https_upgrade,
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
       override;
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateNonNetworkNavigationURLLoaderFactory(
+      const std::string& scheme,
+      content::FrameTreeNodeId frame_tree_node_id) override;
 
   // TODO(yeyun.anton): 实现这个接口
   //   base::FilePath GetLoggingFileName(const base::CommandLine& command_line)

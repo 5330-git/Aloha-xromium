@@ -28,13 +28,22 @@ extern const base::FilePath::CharType kReportingAndNelStoreFilename[];
 extern const base::FilePath::CharType kSCTAuditingPendingReportsFileName[];
 
 namespace url {
-  extern const char kAlohaScheme[];
+extern const char kAlohaScheme[];
+extern const char kAlohaDemoScheme[];
 }
 
 namespace switches {
-  extern const char kUseWebUI[];
-  extern const char kEnableLoggingFile[];
+extern const char kUseWebUI[];
+extern const char kEnableLoggingFile[];
+}  // namespace switches
+
+namespace webapp {
+extern const base::FilePath::CharType kWebAppDirName[];
+
+namespace internal {
+extern const char kAlohaHome[];
 }
+}  // namespace webapp
 }  // namespace aloha
 
 #endif  // ALOHA_COMMON_ALOHA_CONSTANTS_H_

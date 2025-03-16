@@ -18,11 +18,14 @@ namespace aloha {
 
 class AlohaBrowserContentView : public BrowserContentView {
  public:
-  static constexpr char kAlohaHomeWithAlohaScheme[] =
-      "aloha://demo/XXX";
-  static constexpr char kAlohaHomeURLWithFileScheme[] =
-      "file:///D:/codes/build-chromium/chromium/src/aloha/resources/browser/"
-      "aloha-app-main/dist/index.html";
+  static constexpr char kURLInterceotedByDemoURLLoaderRequestInterceptor[] =
+      "aloha-demo://demo_url_loader_request_interceptor";
+  static constexpr char kURLInterceotedByDemoNavigationURLLoaderFactory[] =
+      "aloha-demo://demo_navigation_url_loader_factory";
+  static constexpr char kURLInterceotedByDemoSubResourcesURLLoaderFactory[] =
+      "aloha-demo://demo_sub_resources_url_loader_factory";
+  static constexpr char kAlohaHome[] =
+      "aloha-app-main";
   struct SubViews {
     base::raw_ptr<views::WebView> webview = nullptr;
     base::raw_ptr<views::BoxLayoutView> top_bar_container = nullptr;

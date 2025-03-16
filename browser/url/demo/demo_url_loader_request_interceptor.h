@@ -1,4 +1,4 @@
-// Copyright (c) 2025 The Aloha Authors. All rights reserved.
+// Copyright (c) 2025 The Aloha-Xromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef ALOHA_BROWSER_URL_DEMO_URL_LOADER_REQUEST_INTERCEPTOR_H_
@@ -10,13 +10,16 @@
 // 一个简单的 HTML 页面。
 
 namespace aloha::url {
-// URL 拦截器，用于拦截 aloha://demo 协议的请求
+// URL 拦截器，用于拦截 aloha-demo:// 协议的请求
 // 参考 components\pdf\browser\pdf_url_loader_request_interceptor.cc 实现
 // 将其通过 `content::ContentBrowserClient::WillCreateURLLoaderRequestInterceptor`
-// 注册到 Browser 进程中，会拦截和响应 aloha:// (scheme) demo (host) 的请求
+// 注册到 Browser 进程中，会拦截和响应 aloha-demo:// 的请求
+// scheme://host.domain:port/path/filename
 class DemoURLLoaderRequestInterceptor
     : public content::URLLoaderRequestInterceptor {
  public:
+  // 本拦截器只会拦截 aloha-demo://demo_url_loader_request_interceptor 下的请求
+  constexpr static char kInterceptHost[] = "demo_url_loader_request_interceptor";
   void MaybeCreateLoader(
       const network::ResourceRequest& resource_request,
       content::BrowserContext* browser_context,

@@ -9,11 +9,13 @@ enum AlohaPathKeys {
   PATH_START = base::BasePathKey::PATH_END + 1,
 
   ALOHA_USER_DATA_DIR = PATH_START,
+  ALOHA_WEB_APP_RESOURCES_DIR,
 
   PATH_END,
 };
 
 void GetDefaultUserDataDirectory(base::FilePath* result);
+void GetWebAppPath(base::FilePath* result, std::string app_name);
 
 // 这个接口将被注册到 base::PathService 中，在 base::PathService::Get 中使用
 // 参考 content\shell\browser\shell_paths.cc

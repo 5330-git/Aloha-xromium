@@ -219,3 +219,8 @@ executable("aloha") {
     deps += [ "//sandbox/mac:seatbelt" ]
   }
 }
+
+group("aloha-all") {
+  testonly = true
+  deps = [ ":aloha" , "//aloha/resources/browser:build_webapp_resources"]
+}

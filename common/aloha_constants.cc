@@ -2,7 +2,6 @@
 
 #include "base/files/file_path.h"
 
-
 #define FPL FILE_PATH_LITERAL
 namespace aloha {
 const char kProductName[] = "Aloha-Xromium";
@@ -37,11 +36,20 @@ const base::FilePath::CharType kSCTAuditingPendingReportsFileName[] =
 
 namespace url {
 const char kAlohaScheme[] = "aloha";
+const char kAlohaDemoScheme[] = "aloha-demo";
 }
 
-namespace  switches  {
-    const char kUseWebUI[] = "use-webui";
-    const char kEnableLoggingFile[] = "enable-logging-file";
+namespace switches {
+const char kUseWebUI[] = "use-webui";
+const char kEnableLoggingFile[] = "enable-logging-file";
+}  // namespace switches
+
+namespace webapp {
+const base::FilePath::CharType kWebAppDirName[] = FPL("aloha-webapp");
+
+namespace internal {
+const char kAlohaHome[] = "aloha-app-main";
 }
+}  // namespace webapp
 
 }  // namespace aloha

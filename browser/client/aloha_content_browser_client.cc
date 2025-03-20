@@ -11,6 +11,7 @@
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
 #include "aloha/browser/devtools/devtools_manager_delegate.h"
 #include "aloha/browser/ui/views/aloha_web_contents_view_delegate_views.h"
+#include "aloha/browser/url/aloha_url_loader_factory.h"
 #include "aloha/browser/url/demo/demo_navigation_url_loader_factory.h"
 #include "aloha/browser/url/demo/demo_sub_resources_url_loader_factory.h"
 #include "aloha/browser/url/demo/demo_url_loader_request_interceptor.h"
@@ -222,6 +223,11 @@ void AlohaContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
       aloha::url::DemoSubResourcesURLLoaderFactory::Create();
   factories->insert({aloha::url::kAlohaDemoScheme,
                      std::move(demo_sub_resources_url_loader_factory)});
+  auto aloha_apps_url_loader_factory =
+      aloha::url::AlohaURLLoaderFactory::Create(
+          aloha_content_client_main_parts_->browser_context());
+  factories->insert({aloha::url::kAlohaScheme,
+                     std::move(aloha_apps_url_loader_factory)});
 }
 
 // TODO(yeyun.anton): 检查是否需要实现
@@ -269,7 +275,11 @@ AlohaContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
   if (scheme == aloha::url::kAlohaDemoScheme) {
     // TODO(yeyun.anton): 创建 Aloha 协议的加载器工厂
     return aloha::url::DemoNavigationURLLoaderFactory::Create();
+  } else if (scheme == aloha::url::kAlohaScheme) {
+    return aloha::url::AlohaURLLoaderFactory::Create(
+        aloha_content_client_main_parts_->browser_context());
   }
+  
   return {};
 }
 

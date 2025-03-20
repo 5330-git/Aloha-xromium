@@ -9,6 +9,7 @@
 #include "aloha/browser/client/aloha_content_browser_client.h"
 #include "aloha/browser/client/aloha_content_client_main_parts.h"
 #include "aloha/common/aloha_constants.h"
+#include "aloha/common/aloha_content_client.h"
 #include "aloha/common/aloha_main_client.h"
 #include "aloha/common/aloha_paths.h"
 #include "base/command_line.h"
@@ -103,6 +104,7 @@ std::optional<int> AlohaContentMainDelegate::PreBrowserMain() {
 }
 
 content::ContentClient* AlohaContentMainDelegate::CreateContentClient() {
+  AlohaContentClient::SetContentClient(&aloha_content_client_);
   return &aloha_content_client_;
 }
 

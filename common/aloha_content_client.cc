@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/common/shell_content_client.h"
 #include "content/shell/common/shell_switches.h"
@@ -16,6 +17,20 @@
 #include "url/url_util.h"
 
 namespace aloha {
+
+namespace {
+  AlohaContentClient* g_aloha_content_client = nullptr;
+}
+
+AlohaContentClient* AlohaContentClient::GetContentClient() {
+  return g_aloha_content_client;
+}
+
+void AlohaContentClient::SetContentClient(AlohaContentClient *client) {
+  content::SetContentClient(client);
+  g_aloha_content_client = client;
+}
+
 AlohaContentClient::AlohaContentClient() = default;
 AlohaContentClient::~AlohaContentClient() {}
 

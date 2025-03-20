@@ -13,7 +13,7 @@
 
 namespace aloha::url {
 namespace {
-// 参考 content\browser\data_url_loader_factory.cc
+// 参考 content\browser\data_url_loader_factory.cc: content::DataURLLoaderFactory
 struct WriteData {
   mojo::Remote<network::mojom::URLLoaderClient> client;
   std::string data;

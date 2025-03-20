@@ -28,12 +28,22 @@
       pnpm install
       pnpm run build
       ```
+   2. 另外前端资源的构建已经集成到 GN 流程中，可以使用下面的命令构建前端资源
+      ```bash
+       autoninja -C out/Default aloha/resources/browser:build_webapp_resources
+      ```
 4. 编译浏览器客户端
    1. 确保切换到 chromium 代码的 src 根目录下，执行下面的命令
 
       ```bash
       gn gen out/Default
       autoninja -C out/Default aloha
+      ```
+   2. 也可以通过下面的命令同时编译浏览器客户端和前端资源：
+
+      ```bash
+      gn gen out/Default
+      autoninja -C out/Default aloha-all
       ```
 
 ## 博客链接

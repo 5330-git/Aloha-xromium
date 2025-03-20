@@ -37,11 +37,14 @@ const base::FilePath::CharType kSCTAuditingPendingReportsFileName[] =
 namespace url {
 const char kAlohaScheme[] = "aloha";
 const char kAlohaDemoScheme[] = "aloha-demo";
+
+const char kAlohaAppsHost[] = "apps";
 }
 
 namespace switches {
 const char kUseWebUI[] = "use-webui";
 const char kEnableLoggingFile[] = "enable-logging-file";
+const char kAlohaUserDataDir[] = "user-data-dir";
 }  // namespace switches
 
 namespace webapp {

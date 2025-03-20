@@ -27,7 +27,19 @@
 namespace aloha {
 // 过渡：先拷贝 `content::ShellContentClient` 类，然后再修改。
 class AlohaContentClient : public content::ContentClient {
-  public:
+ public:
+  // 由于 content 模块的限制，我们无法访问 `content::GetContentClient()` 函数。
+  // 不过在 Aloha-Xromium 中，这个函数返回的是 `aloha::AlohaContentClient` 类的
+  // 实例。因此我们可以自己实现对应的接口，存储一份实例指针。
+  // 注意：这个实例是全局唯一的，应当与 `content::GetContentClient` 保持一致。
+  static AlohaContentClient* GetContentClient();
+  // content::SetContentClient 只会在 content::ContentClientCreator
+  // 中创建，并且是跟随 ContentMainDelegate
+  // 的。不过由于这个接口是导出的，为了防止我们存储的实例和
+  // content::GetContentClient 返回的实例不一致，这里规定在 Aloha-Xromium
+  // 中应该用这个接口替代 content::SetContentClient。
+  static void SetContentClient(AlohaContentClient* client);
+
   AlohaContentClient();
   ~AlohaContentClient() override;
 

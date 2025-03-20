@@ -1,5 +1,6 @@
 #include "aloha/browser/profile/aloha_browser_profile.h"
 
+#include "aloha/common/aloha_constants.h"
 #include "aloha/common/aloha_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -60,12 +61,12 @@ AlohaBrowserProfile::~AlohaBrowserProfile() {
 
 void AlohaBrowserProfile::InitWhileIOAllowed() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(switches::kIgnoreCertificateErrors)) {
+  if (cmd_line->HasSwitch(::switches::kIgnoreCertificateErrors)) {
     ignore_certificate_errors_ = true;
   }
 
-  if (cmd_line->HasSwitch(switches::kContentShellUserDataDir)) {
-    path_ = cmd_line->GetSwitchValuePath(switches::kContentShellUserDataDir);
+  if (cmd_line->HasSwitch(aloha::switches::kAlohaUserDataDir)) {
+    path_ = cmd_line->GetSwitchValuePath(aloha::switches::kAlohaUserDataDir);
     if (base::DirectoryExists(path_) || base::CreateDirectory(path_)) {
       // BrowserContext needs an absolute path, which we would normally get via
       // PathService. In this case, manually ensure the path is absolute.

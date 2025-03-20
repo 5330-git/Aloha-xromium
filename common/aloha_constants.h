@@ -30,11 +30,14 @@ extern const base::FilePath::CharType kSCTAuditingPendingReportsFileName[];
 namespace url {
 extern const char kAlohaScheme[];
 extern const char kAlohaDemoScheme[];
+
+extern const char kAlohaAppsHost[];
 }
 
 namespace switches {
 extern const char kUseWebUI[];
 extern const char kEnableLoggingFile[];
+extern const char kAlohaUserDataDir[];
 }  // namespace switches
 
 namespace webapp {

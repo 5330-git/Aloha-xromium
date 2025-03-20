@@ -24,8 +24,9 @@ class AlohaBrowserContentView : public BrowserContentView {
       "aloha-demo://demo_navigation_url_loader_factory";
   static constexpr char kURLInterceotedByDemoSubResourcesURLLoaderFactory[] =
       "aloha-demo://demo_sub_resources_url_loader_factory";
-  static constexpr char kAlohaHome[] =
-      "aloha-app-main";
+  static constexpr char kAlohaHome[] = "aloha-app-main";
+  static constexpr char kAlohaAppMainURL[] =
+      "aloha://apps/aloha-app-main/index.html";
   struct SubViews {
     base::raw_ptr<views::WebView> webview = nullptr;
     base::raw_ptr<views::BoxLayoutView> top_bar_container = nullptr;
@@ -56,8 +57,8 @@ class AlohaBrowserContentView : public BrowserContentView {
 
   // WebContentsObserver
   void DidUpdateFaviconURL(
-    content::RenderFrameHost* render_frame_host,
-    const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
 
  protected:
   // 用于定义整个Views各个部分视图的容器

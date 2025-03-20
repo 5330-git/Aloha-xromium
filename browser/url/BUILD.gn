@@ -1,8 +1,10 @@
 source_set("url") {
   testonly = true
   sources = [
-    "aloha_url_loader_request_interceptor.cc",
-    "aloha_url_loader_request_interceptor.h",
+    "aloha_url_loader_factory.cc",
+    "aloha_url_loader_factory.h",
+    "aloha_apps_url_loader.cc",
+    "aloha_apps_url_loader.h",
     "demo/demo_navigation_url_loader_factory.cc",
     "demo/demo_navigation_url_loader_factory.h",
     "demo/demo_sub_resources_url_loader_factory.cc",
@@ -31,6 +33,7 @@ source_set("url") {
     "//components/prefs:prefs",
     "//content/public/app",
     "//content/public/browser",
+    "//content/public/common:common",
     "//content/public/renderer",
     "//content/shell:content_shell_lib",
     "//ipc",

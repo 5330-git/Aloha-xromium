@@ -177,33 +177,39 @@ MainWidgetDelegateView::MainWidgetDelegateView() {
   layout->SetFlexForView(tabbed_pane_, 1);
 
   // 添加 tab 以测试
-  base::FilePath aloha_home_path;
-  path_service::GetWebAppPath(&aloha_home_path,
-                              AlohaBrowserContentView::kAlohaHome);
-  auto webapp_view_with_file_scheme = std::make_unique<WebAppContentView>(
-      GURL("file://" + aloha_home_path.MaybeAsASCII()), this);
-  webapp_view_with_file_scheme->Init();
-  AddBrowserContentView("Aloha Main" + std::string("with file scheme"),
-                        std::move(webapp_view_with_file_scheme));
+  // base::FilePath aloha_home_path;
+  // path_service::GetWebAppPath(&aloha_home_path,
+  //                             AlohaBrowserContentView::kAlohaHome);
+  // auto webapp_view_with_file_scheme = std::make_unique<WebAppContentView>(
+  //     GURL("file://" + aloha_home_path.MaybeAsASCII()), this);
+  // webapp_view_with_file_scheme->Init();
+  // AddBrowserContentView("Aloha Main" + std::string("with file scheme"),
+  //                       std::move(webapp_view_with_file_scheme));
 
-  auto webapp_view_with_url_disposed_by_interceptor =
-      std::make_unique<WebAppContentView>(
-          GURL(AlohaBrowserContentView::
-                   kURLInterceotedByDemoURLLoaderRequestInterceptor),
-          this);
-  webapp_view_with_url_disposed_by_interceptor->Init();
-  AddBrowserContentView(
-      "Interceptor Demo",
-      std::move(webapp_view_with_url_disposed_by_interceptor));
-  auto webapp_view_with_url_disposed_by_navigation_url_loader =
-      std::make_unique<WebAppContentView>(
-          GURL(AlohaBrowserContentView::
-                   kURLInterceotedByDemoNavigationURLLoaderFactory),
-          this);
-  webapp_view_with_url_disposed_by_navigation_url_loader->Init();
-  AddBrowserContentView(
-      "URL Navigation Factory Demo" ,
-      std::move(webapp_view_with_url_disposed_by_navigation_url_loader));
+  auto webapp_view_with_aloha_scheme = std::make_unique<WebAppContentView>(
+      GURL(AlohaBrowserContentView::kAlohaAppMainURL), this);
+  webapp_view_with_aloha_scheme->Init();
+  AddBrowserContentView("Aloha Main" + std::string("with aloha scheme"),
+                        std::move(webapp_view_with_aloha_scheme));
+
+  // auto webapp_view_with_url_disposed_by_interceptor =
+  //     std::make_unique<WebAppContentView>(
+  //         GURL(AlohaBrowserContentView::
+  //                  kURLInterceotedByDemoURLLoaderRequestInterceptor),
+  //         this);
+  // webapp_view_with_url_disposed_by_interceptor->Init();
+  // AddBrowserContentView(
+  //     "Interceptor Demo",
+  //     std::move(webapp_view_with_url_disposed_by_interceptor));
+  // auto webapp_view_with_url_disposed_by_navigation_url_loader =
+  //     std::make_unique<WebAppContentView>(
+  //         GURL(AlohaBrowserContentView::
+  //                  kURLInterceotedByDemoNavigationURLLoaderFactory),
+  //         this);
+  // webapp_view_with_url_disposed_by_navigation_url_loader->Init();
+  // AddBrowserContentView(
+  //     "URL Navigation Factory Demo",
+  //     std::move(webapp_view_with_url_disposed_by_navigation_url_loader));
 }
 
 void MainWidgetDelegateView::AddBrowserContentView(

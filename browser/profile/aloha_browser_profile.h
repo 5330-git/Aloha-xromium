@@ -5,8 +5,9 @@
 // 来管理用户偏好（目前的使用场景是需要通过 PrefService 初始化 OSCrypt
 // 的密钥以支持 Cookie的持久化存储）
 // 再比如我们需要自定义 content::BrowserContext::GetPath() 来返回用户数据目录
+#include "aloha/browser/profile/aloha_download_manager_delegate.h"
+#include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
-#include "content/shell/browser/shell_browser_context.h"
 
 namespace aloha {
 
@@ -58,8 +59,7 @@ class AlohaBrowserProfile : public content::BrowserContext {
  protected:
   bool ignore_certificate_errors() const { return ignore_certificate_errors_; }
 
-  std::unique_ptr<content::ShellDownloadManagerDelegate>
-      download_manager_delegate_;
+  std::unique_ptr<AlohaDownloadManagerDelegate> download_manager_delegate_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<content::BackgroundSyncController>
       background_sync_controller_;

@@ -10,7 +10,6 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
 static_library("aloha_webview_lib") {
   testonly = true
-
   sources = [
     "app/mac_init.h",
     "app/mac_init.mm",
@@ -57,27 +56,6 @@ static_library("aloha_webview_lib") {
     ":resources_grit",
     "resources/browser:resources",
     "resources/vector_icons:vector_icons",
-    "//base",
-    "//chrome/browser/resources/webui_gallery:resources",
-    "//components/guest_view/browser",
-    "//components/guest_view/common:mojom",
-    "//components/guest_view/renderer",
-    "//components/input:input",
-    "//content/public/app",
-    "//content/public/browser",
-    "//content/public/renderer",
-    "//ipc",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//third_party/blink/public:blink",
-    "//ui/base",
-    "//ui/display",
-    "//ui/platform_window",
-    "//ui/views",
-    "//ui/views/controls/webview:webview",
-    "//ui/webui",
-    "//ui/wm:wm",
-    "//v8:v8_headers",
   ]
 
   data_deps = [ "//tools/v8_context_snapshot" ]
@@ -118,7 +96,6 @@ static_library("aloha_webview_lib") {
 }
 
 grit("resources") {
-  testonly = true
   source = "resources/aloha_resources.grd"
   outputs = [
     "grit/aloha_resources.h",
@@ -127,7 +104,6 @@ grit("resources") {
 }
 
 repack("pak") {
-  testonly = true
   sources = [
     "$root_gen_dir/aloha/resources/browser/aloha_browser_resources.pak",
 
@@ -184,6 +160,33 @@ mojom("browser_mojo_bindings") {
 }
 
 executable("aloha") {
+  sources = [
+    "app/aloha_content_main_delegate.cc",
+    "app/aloha_content_main_delegate.h",
+    "app/aloha_main.cc",
+    "app/aloha_main.h",
+  ]
+  deps = [ "//aloha/browser:browser" ]
+  if (is_win) {
+    configs += [ "//build/config/win:windowed" ]
+
+    deps += [
+      "//build/win:default_exe_manifest",
+      "//content:sandbox_helper_win",
+      "//sandbox/win:sandbox",
+    ]
+    sources += [
+      "app/aloha_exe_main_win.cc",
+      "resources/aloha_exe.rc",
+    ]
+  }
+
+  if (is_mac) {
+    deps += [ "//sandbox/mac:seatbelt" ]
+  }
+}
+
+executable("aloha_webui_exe") {
   testonly = true
 
   sources = [
@@ -222,5 +225,8 @@ executable("aloha") {
 
 group("aloha-all") {
   testonly = true
-  deps = [ ":aloha" , "//aloha/resources/browser:build_webapp_resources"]
+  deps = [
+    ":aloha",
+    "//aloha/resources/browser:build_webapp_resources",
+  ]
 }

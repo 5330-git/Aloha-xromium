@@ -6,7 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
 source_set("aloha_content_client") {
-  testonly = true
   sources = [
     "aloha_content_browser_client.cc",
     "aloha_content_browser_client.h",
@@ -23,33 +22,20 @@ source_set("aloha_content_client") {
   }
 
   deps = [
+    "//aloha:resources",
     "//aloha/browser/devtools:aloha_devtools",
     "//aloha/browser/profile:profile",
     "//aloha/browser/ui/views:views",
     "//aloha/browser/url:url",
     "//aloha/common:common",
-    "//base",
-    "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//components/favicon/content:content",
-    "//components/favicon/core:core",
     "//components/prefs:prefs",
-    "//components/renderer_context_menu:renderer_context_menu",
-    "//content",
-    "//content/shell:content_shell_lib",
-    "//third_party/icu",
-    "//ui/base",
-    "//ui/base/ime/init",
-    "//ui/display",
-    "//ui/events",
-    "//ui/gfx",
-    "//ui/gfx/geometry",
-    "//ui/resources",
-    "//ui/resources:ui_test_pak",
-    "//ui/resources:ui_test_pak_data_200_percent",
-    "//ui/views:test_support",
+    "//content:content",
+    "//services/cert_verifier/public/mojom:mojom",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//services/network/public/mojom:mojom",
+    "//ui/base:base",
     "//ui/views:views",
-    "//ui/views/controls/webview:webview",
   ]
 
   if (use_aura) {

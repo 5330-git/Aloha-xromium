@@ -16,8 +16,6 @@
 #include "content/public/browser/context_factory.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/result_codes.h"
-#include "content/shell/browser/shell_application_mac.h"
-#include "content/shell/browser/shell_browser_context.h"
 #include "ui/views/test/test_views_delegate.h"
 
 // A simple NSApplicationDelegate that provides a basic mainMenu and can

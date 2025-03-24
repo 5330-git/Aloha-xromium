@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "aloha/browser/profile/aloha_browser_profile.h"
+#include "aloha/browser/ui/views/aloha_views_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
@@ -66,7 +67,8 @@ class AlohaContentClientMainParts : public content::BrowserMainParts {
 
   std::unique_ptr<aloha::AlohaBrowserProfile> browser_context_;
 
-  std::unique_ptr<views::TestViewsDelegate> views_delegate_;
+  // std::unique_ptr<views::TestViewsDelegate> views_delegate_;
+  std::unique_ptr<aloha::AlohaViewsDelegate> views_delegate_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };

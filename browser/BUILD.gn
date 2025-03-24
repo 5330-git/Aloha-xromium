@@ -1,0 +1,10 @@
+source_set("browser") {
+  sources = []
+  public_deps = [
+    "//aloha/browser/client:aloha_content_client",
+    "//aloha/browser/devtools:aloha_devtools",
+    "//aloha/browser/ui/views:views",
+    "//aloha/common:common",
+  ]
+  data_deps = [ "//tools/v8_context_snapshot" ]
+}

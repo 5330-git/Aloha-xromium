@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "aloha/common/aloha_paths.h"
-#include "aloha/grit/aloha_resources.h"
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -143,7 +142,7 @@ int AlohaMainClient::PreAlohaMain() {
   // TEMP USING END
 
   // INIT COMMAND LINE
-
+  
   return 0;
 }
 

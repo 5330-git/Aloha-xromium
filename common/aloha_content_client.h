@@ -21,8 +21,8 @@
 #include <string_view>
 #include <vector>
 
+#include "aloha/common/aloha_origin_trial_policy.h"
 #include "content/public/common/content_client.h"
-#include "content/shell/common/shell_origin_trial_policy.h"
 
 namespace aloha {
 // 过渡：先拷贝 `content::ShellContentClient` 类，然后再修改。
@@ -54,7 +54,7 @@ class AlohaContentClient : public content::ContentClient {
   void AddAdditionalSchemes(Schemes* schemes) override;
 
  private:
-  content::ShellOriginTrialPolicy origin_trial_policy_;
+  aloha::AlohaOriginTrialPolicy origin_trial_policy_;
 };
 }  // namespace aloha
 

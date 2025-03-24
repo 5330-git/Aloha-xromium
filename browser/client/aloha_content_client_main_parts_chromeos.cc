@@ -6,7 +6,6 @@
 #include "aloha/browser/client/aloha_content_client_main_parts_aura.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/common/result_codes.h"
-#include "content/shell/browser/shell_browser_context.h"
 #include "ui/aura/window.h"
 #include "ui/wm/test/wm_test_helper.h"
 

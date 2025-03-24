@@ -1,5 +1,4 @@
 source_set("aloha_devtools") {
-  testonly = true
   sources = [
     "devtools_frontend.cc",
     "devtools_frontend.h",

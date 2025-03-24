@@ -5,7 +5,6 @@
 #include "aloha/common/aloha_main_client.h"
 #include "aloha/browser/client/aloha_content_client_main_parts_aura.h"
 #include "content/public/common/result_codes.h"
-#include "content/shell/browser/shell_browser_context.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 

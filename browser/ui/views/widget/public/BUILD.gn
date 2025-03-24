@@ -1,5 +1,4 @@
 source_set("public") {
-  testonly = true
   sources = [
     "aloha_widget_delegate_view.cc",
     "aloha_widget_delegate_view.h",
@@ -12,26 +11,6 @@ source_set("public") {
     "//aloha/resources/browser:resources",
     "//aloha/resources/vector_icons:vector_icons",
     "//base",
-    "//chrome/browser/resources/webui_gallery:resources",
-    "//components/guest_view/browser",
-    "//components/guest_view/common:mojom",
-    "//components/guest_view/renderer",
-    "//components/input:input",
-    "//content/public/app",
-    "//content/public/browser",
-    "//content/public/renderer",
-    "//ipc",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//third_party/blink/public:blink",
-    "//ui/base",
-    "//ui/display",
-    "//ui/platform_window",
-    "//ui/views:views",
-    "//ui/menus",
-    "//ui/views/controls/webview:webview",
-    "//ui/webui",
-    "//ui/wm:wm",
-    "//v8:v8_headers",
+    "//content:content",
   ]
 }

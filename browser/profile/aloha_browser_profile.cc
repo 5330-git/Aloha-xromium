@@ -1,7 +1,10 @@
 #include "aloha/browser/profile/aloha_browser_profile.h"
 
+#include "aloha/browser/profile/aloha_content_index_provider.h"
+#include "aloha/browser/profile/aloha_permission_manager.h"
 #include "aloha/common/aloha_constants.h"
 #include "aloha/common/aloha_paths.h"
+#include "aloha_download_manager_delegate.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -17,15 +20,8 @@
 #include "content/public/browser/content_index_provider.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_content_browser_client.h"
-#include "content/shell/browser/shell_content_index_provider.h"
-#include "content/shell/browser/shell_download_manager_delegate.h"
-#include "content/shell/browser/shell_permission_manager.h"
-#include "content/shell/common/shell_switches.h"
-#include "content/test/mock_background_sync_controller.h"
-#include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+
 
 namespace aloha {
 
@@ -114,7 +110,7 @@ content::DownloadManagerDelegate*
 AlohaBrowserProfile::GetDownloadManagerDelegate() {
   if (!download_manager_delegate_.get()) {
     download_manager_delegate_ =
-        std::make_unique<content::ShellDownloadManagerDelegate>();
+        std::make_unique<aloha::AlohaDownloadManagerDelegate>();
     download_manager_delegate_->SetDownloadManager(GetDownloadManager());
   }
 
@@ -150,7 +146,7 @@ content::SSLHostStateDelegate* AlohaBrowserProfile::GetSSLHostStateDelegate() {
 content::PermissionControllerDelegate*
 AlohaBrowserProfile::GetPermissionControllerDelegate() {
   if (!permission_manager_.get()) {
-    permission_manager_ = std::make_unique<content::ShellPermissionManager>();
+    permission_manager_ = std::make_unique<aloha::AlohaPermissionManager>();
   }
   return permission_manager_.get();
 }
@@ -165,11 +161,12 @@ AlohaBrowserProfile::GetBackgroundFetchDelegate() {
   return nullptr;
 }
 
+// TODO(yeyun.anton): 调研实现
 content::BackgroundSyncController*
 AlohaBrowserProfile::GetBackgroundSyncController() {
   if (!background_sync_controller_) {
-    background_sync_controller_ =
-        std::make_unique<content::MockBackgroundSyncController>();
+    // background_sync_controller_ =
+    //     std::make_unique<content::MockBackgroundSyncController>();
   }
   return background_sync_controller_.get();
 }
@@ -182,17 +179,18 @@ AlohaBrowserProfile::GetBrowsingDataRemoverDelegate() {
 content::ContentIndexProvider* AlohaBrowserProfile::GetContentIndexProvider() {
   if (!content_index_provider_) {
     content_index_provider_ =
-        std::make_unique<content::ShellContentIndexProvider>();
+        std::make_unique<aloha::AlohaContentIndexProvider>();
   }
   return content_index_provider_.get();
 }
 
+// TODO(yeyun.anton): 调研实现
 content::ReduceAcceptLanguageControllerDelegate*
 AlohaBrowserProfile::GetReduceAcceptLanguageControllerDelegate() {
   if (!reduce_accept_lang_controller_delegate_) {
-    reduce_accept_lang_controller_delegate_ =
-        std::make_unique<content::MockReduceAcceptLanguageControllerDelegate>(
-            content::GetShellLanguage());
+    // reduce_accept_lang_controller_delegate_ =
+    //     std::make_unique<content::MockReduceAcceptLanguageControllerDelegate>(
+    //         content::GetShellLanguage());
   }
   return reduce_accept_lang_controller_delegate_.get();
 }

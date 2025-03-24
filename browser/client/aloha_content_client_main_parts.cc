@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "aloha/browser/devtools/devtools_server.h"
+#include "aloha/browser/ui/views/aloha_views_delegate.h"
 #include "aloha/common/aloha_main_client.h"
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,9 +15,8 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/public/common/result_codes.h"
-#include "content/shell/browser/shell_browser_context.h"
 #include "ui/base/ime/init/input_method_initializer.h"
-#include "ui/views/test/desktop_test_views_delegate.h"
+// #include "ui/views/test/desktop_test_views_delegate.h"
 
 namespace aloha {
 
@@ -33,7 +33,8 @@ int AlohaContentClientMainParts::PreMainMessageLoopRun() {
   // DevTools
   devtools::StartHttpHandler(browser_context_.get());
 
-  views_delegate_ = std::make_unique<views::DesktopTestViewsDelegate>();
+  // views_delegate_ = std::make_unique<views::DesktopTestViewsDelegate>();
+  views_delegate_ = std::make_unique<aloha::AlohaViewsDelegate>();
   run_loop_ = std::make_unique<base::RunLoop>();
   AlohaMainClient::GetInstance()->set_quit_closure(run_loop_->QuitClosure());
   return content::RESULT_CODE_NORMAL_EXIT;
@@ -46,7 +47,7 @@ void AlohaContentClientMainParts::WillRunMainMessageLoop(
 
 void AlohaContentClientMainParts::PostMainMessageLoopRun() {
   browser_context_.reset();
-  views_delegate_.reset();
+  // views_delegate_.reset();
 }
 
 // // 参考 chrome\browser\chrome_browser_main_win.cc

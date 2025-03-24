@@ -37,8 +37,6 @@
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/user_agent.h"
-#include "content/shell/browser/shell_devtools_manager_delegate.h"
-#include "content/shell/browser/shell_paths.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"

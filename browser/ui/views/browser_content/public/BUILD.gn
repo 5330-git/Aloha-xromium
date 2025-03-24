@@ -1,5 +1,4 @@
 source_set("public") {
-  testonly = true
   sources = [
     "browser_content_view.h",
     "browser_content_view.cc",

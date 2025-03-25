@@ -12,7 +12,7 @@
 #include "aloha/browser/ui/menu/tab_menu_model.h"
 #include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane_tab.h"
 #include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane_tab_strip.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "aloha/resources/vector_icons/vector_icons.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"

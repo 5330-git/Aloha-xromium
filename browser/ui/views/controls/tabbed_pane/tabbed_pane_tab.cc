@@ -3,7 +3,8 @@
 #include "aloha/browser/ui/color/color_ids.h"
 #include "aloha/browser/ui/menu/tab_menu_model.h"
 #include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/app_icon_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "aloha/resources/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -18,6 +19,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+
 
 namespace aloha {
 AlohaTabbedPaneTab::AlohaTabbedPaneTab(AlohaTabbedPane* tabbed_pane,

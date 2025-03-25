@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -72,23 +73,34 @@ std::optional<int> AlohaContentMainDelegate::BasicStartupComplete() {
 }
 
 void AlohaContentMainDelegate::PreSandboxStartup() {
-  base::FilePath ui_test_pak_path;
-  CHECK(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
-  ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
+  base::FilePath aloha_resources_pak_path;
+  CHECK(base::PathService::Get(path_service::ALOHA_RESOURCES_PAK,
+                               &aloha_resources_pak_path));
+  ui::ResourceBundle::InitSharedInstanceWithPakPath(aloha_resources_pak_path);
 
-  // Load content resources to provide, e.g., sandbox configuration data on Mac.
-  base::FilePath content_resources_pak_path;
-  base::PathService::Get(base::DIR_ASSETS, &content_resources_pak_path);
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      content_resources_pak_path.AppendASCII("content_resources.pak"),
-      ui::k100Percent);
-
-  if (ui::IsScaleFactorSupported(ui::k200Percent)) {
-    base::FilePath ui_test_resources_200 = ui_test_pak_path.DirName().Append(
-        FILE_PATH_LITERAL("ui_test_200_percent.pak"));
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        ui_test_resources_200, ui::k200Percent);
+  // 加载带缩放尺寸的资源
+  base::FilePath aloha_scale_pak_path;
+  ui::ResourceScaleFactor scale_factor;
+  if (ui::IsScaleFactorSupported(ui::k100Percent)) {
+    CHECK(base::PathService::Get(path_service::ALOHA_100_PERCENT_PAK,
+                                 &aloha_scale_pak_path));
+    scale_factor = ui::k100Percent;
+  } else if (ui::IsScaleFactorSupported(ui::k200Percent)) {
+    CHECK(base::PathService::Get(path_service::ALOHA_200_PERCENT_PAK,
+                                 &aloha_scale_pak_path));
+    scale_factor = ui::k200Percent;
+  } else {
+    NOTREACHED() << "Unsupported scale factor";
   }
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      aloha_scale_pak_path, scale_factor);
+  
+  // 加载 locale 资源(测试阶段默认加入英语，未来需要根据系统语言加载)
+  base::FilePath aloha_locale_pak_path;
+  CHECK(base::PathService::Get(path_service::ALOHA_DEFAULT_LOCALE_PAK,
+                               &aloha_locale_pak_path));
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      aloha_locale_pak_path, ui::kScaleFactorNone);
 
   AlohaMainClient::GetInstance()->OnResourcesLoaded();
 }

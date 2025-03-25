@@ -44,8 +44,44 @@ bool AlohaPathProvider(int key, base::FilePath* result) {
         NOTREACHED() << "Could not get path to executable.";
       }
       *result = exe_path.DirName();
-      *result =
-          result->Append(aloha::webapp::kWebAppDirName);
+      *result = result->Append(aloha::webapp::kWebAppDirName);
+      return true;
+    }
+    case ALOHA_RESOURCES_PAK: {
+      base::FilePath exe_path;
+      if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
+        NOTREACHED() << "Could not get path to executable.";
+      }
+      *result = exe_path.DirName();
+      *result = result->Append(aloha::resources::kAlohaResourcesPakName);
+      return true;
+    }
+    case ALOHA_100_PERCENT_PAK: {
+      base::FilePath exe_path;
+      if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
+        NOTREACHED() << "Could not get path to executable.";
+      }
+      *result = exe_path.DirName();
+      *result = result->Append(aloha::resources::kAloha100PercentPakName);
+      return true;
+    }
+    case ALOHA_200_PERCENT_PAK: {
+      base::FilePath exe_path;
+      if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
+        NOTREACHED() << "Could not get path to executable.";
+      }
+      *result = exe_path.DirName();
+      *result = result->Append(aloha::resources::kAloha200PercentPakName);
+      return true;
+    }
+    case ALOHA_DEFAULT_LOCALE_PAK: {
+      base::FilePath exe_path;
+      if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
+        NOTREACHED() << "Could not get path to executable.";
+      }
+      *result = exe_path.DirName();
+      *result = result->Append(aloha::kLocaleDir)
+                    .Append(aloha::resources::kAlohaDefaultLocalePakName);
       return true;
     }
     default:

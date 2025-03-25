@@ -18,7 +18,7 @@
 #include "aloha/common/aloha_constants.h"
 #include "aloha/common/aloha_main_client.h"
 #include "aloha/common/aloha_paths.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "aloha_content_browser_client.h"
 #include "aloha_content_client_main_parts.h"
 #include "base/files/file_path.h"

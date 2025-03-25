@@ -1,0 +1,39 @@
+executable("aloha_installer") {
+  sources = [ "main.cc" ]
+  deps = [
+    "//base",
+    "//base/win:pe_image",
+  ]
+}
+
+aloha_runtime_deps = "$root_gen_dir/aloha_component.runtime_deps"
+
+# 打包程序的时候，需要将 aloha 的运行时依赖也打包进去
+# 因此需要借助 group 来获取 aloha 的依赖库文件
+group("aloha_runtime_deps") {
+  write_runtime_deps = aloha_runtime_deps
+  data_deps = [ "//aloha" ]
+}
+
+# 执行打包脚本，将 aloha 及其所有依赖打包到一个压缩包中
+action("aloha_mini_install_packer") {
+  script = "//aloha/tools/mini_install_packer/runme.py"
+  aloha_pack_patterns_file = "aloha-pack-patterns.json"
+  abs_root_build_dir = rebase_path(root_out_dir, root_build_dir)
+  abs_deps_file_path = rebase_path(aloha_runtime_deps, root_build_dir)
+  abs_pack_patterns_file_path =
+      rebase_path(aloha_pack_patterns_file, root_build_dir)
+  args = [
+    "--root_build_dir=$abs_root_build_dir",
+    "--deps_file=$abs_deps_file_path",
+    "--pack_patterns_file=$abs_pack_patterns_file_path",
+  ]
+  outputs = [
+    "$root_build_dir/aloha-installation",
+    "$root_build_dir/aloha-installation.7z",
+  ]
+  deps = [
+    ":aloha_runtime_deps",
+    "//aloha:aloha-all",
+  ]
+}

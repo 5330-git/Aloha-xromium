@@ -1,0 +1,5 @@
+kRuntimeDependenciesPatternName = "runtime-dependencies-patterns"
+kSpecificTargetEntryName = "specific-targets"
+kSpecificTargetEntryTargetPathName = "target-path"
+kInstallRootPlaceholderName = "install_root"
+kInstallDirName = "aloha-installation"

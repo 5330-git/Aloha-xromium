@@ -2,10 +2,10 @@
 <grit base_dir="." latest_public_release="0" current_release="1"
   output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
   <outputs>
-    <output filename="grit/aloha_resources.h" type="rc_header" context="default_100_percent">
+    <output filename="grit/unscaled_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
-    <output filename="aloha_resources.pak"
+    <output filename="unscaled_resources.pak"
       type="data_package" lang="en" context="default_100_percent" />
   </outputs>
   <release seq="1">
@@ -20,9 +20,5 @@
         Aloha Devtools
       </message>
     </messages>
-    <structures fallback_to_low_resolution="true">
-      <structure type="chrome_scaled_image" name="IDR_ALOHA_ICON"
-        file="aloha.png" />
-    </structures>
   </release>
 </grit>

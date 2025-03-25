@@ -14,7 +14,7 @@
 #include "aloha/browser/webui_controller_factory.h"
 #include "aloha/common/aloha_constants.h"
 #include "aloha/common/aloha_paths.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

@@ -7,6 +7,7 @@
 namespace aloha {
 // Aloha Info
 extern const char kProductName[];
+extern const base::FilePath::CharType kLocaleDir[];
 
 // Aloha Executable Related Path
 extern const base::FilePath::CharType kBrowserProcessExecutablePath[];
@@ -32,7 +33,7 @@ extern const char kAlohaScheme[];
 extern const char kAlohaDemoScheme[];
 
 extern const char kAlohaAppsHost[];
-}
+}  // namespace url
 
 namespace switches {
 extern const char kUseWebUI[];
@@ -47,6 +48,13 @@ namespace internal {
 extern const char kAlohaHome[];
 }
 }  // namespace webapp
+
+namespace resources {
+extern const base::FilePath::CharType kAlohaResourcesPakName[];
+extern const base::FilePath::CharType kAloha100PercentPakName[];
+extern const base::FilePath::CharType kAloha200PercentPakName[];
+extern const base::FilePath::CharType kAlohaDefaultLocalePakName[];
+}  // namespace resources
 }  // namespace aloha
 
 #endif  // ALOHA_COMMON_ALOHA_CONSTANTS_H_

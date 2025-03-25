@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//aloha/aloha_paks.gni")
 import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
@@ -52,10 +53,11 @@ static_library("aloha_webview_lib") {
 
   deps = [
     ":browser_mojo_bindings",
-    ":pak",
-    ":resources_grit",
+    ":resources",
     "resources/browser:resources",
     "resources/vector_icons:vector_icons",
+    "//aloha/resources:app_icon_resources",
+    "//aloha/resources:unscaled_resources",
   ]
 
   data_deps = [ "//tools/v8_context_snapshot" ]
@@ -95,59 +97,13 @@ static_library("aloha_webview_lib") {
   }
 }
 
-grit("resources") {
-  source = "resources/aloha_resources.grd"
-  outputs = [
-    "grit/aloha_resources.h",
-    "aloha_resources.pak",
-  ]
+# 新增的资源应该在 aloha_paks.gni 中添加
+aloha_paks("aloha_all_resources") {
+  output_dir = root_out_dir
 }
 
-repack("pak") {
-  sources = [
-    "$root_gen_dir/aloha/resources/browser/aloha_browser_resources.pak",
-
-    # "$root_gen_dir/chrome/webui_gallery_resources.pak",
-    "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
-
-    # fix CSSDefaultStyleSheet loss default_media_control_style（$root_gen_dir/third_party/blink/renderer/modules/media_controls/resources/media_controls_resources_100_percent.pak）
-    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-
-    # blink 资源提前补充：
-    "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
-
-    # fix blink_strings loss
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_af.pak",
-
-    # aloha 自定义资源
-    "$target_gen_dir/aloha_resources.pak",
-
-    # webui_examples 和 views_examples_with_content 重复的
-    # "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
-    # "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
-    # "$root_gen_dir/ui/resources/webui_resources.pak",
-    # "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-    # "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
-
-    # 这里应该在 PreSandboxStartup 中加载，而不是静态打包：
-    # ~把 ui/resources 的资源打包进来, 否则 52613 资源找不到会触发 ImageSkia 的CHECK~
-    # "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-  ]
-  deps = [
-    ":resources",
-    "resources/browser:resources",
-    "//chrome/browser/resources/webui_gallery:resources",
-    "//content/browser/devtools:devtools_resources",
-    "//mojo/public/js:resources",
-    "//third_party/blink/public:devtools_inspector_resources",
-    "//third_party/blink/public:image_resources",
-    "//third_party/blink/public:resources",
-    "//third_party/blink/public:scaled_resources_100_percent",
-    "//third_party/blink/public/strings:strings",
-    "//ui/resources",
-    "//ui/strings",
-  ]
-  output = "$root_out_dir/aloha.pak"
+group("resources") {
+  deps = [ ":aloha_all_resources" ]
 }
 
 mojom("browser_mojo_bindings") {
@@ -166,7 +122,10 @@ executable("aloha") {
     "app/aloha_main.cc",
     "app/aloha_main.h",
   ]
-  deps = [ "//aloha/browser:browser" ]
+  deps = [
+    ":resources",
+    "//aloha/browser:browser",
+  ]
   if (is_win) {
     configs += [ "//build/config/win:windowed" ]
 
@@ -224,9 +183,9 @@ executable("aloha_webui_exe") {
 }
 
 group("aloha-all") {
-  testonly = true
   deps = [
     ":aloha",
     "//aloha/resources/browser:build_webapp_resources",
+    "//aloha/installer:aloha_installer",
   ]
 }

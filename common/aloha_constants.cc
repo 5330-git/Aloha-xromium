@@ -5,6 +5,7 @@
 #define FPL FILE_PATH_LITERAL
 namespace aloha {
 const char kProductName[] = "Aloha-Xromium";
+const base::FilePath::CharType kLocaleDir[] = FPL("locales/aloha");
 
 const base::FilePath::CharType kBrowserProcessExecutableName[] =
     FPL("aloha.exe");
@@ -39,7 +40,7 @@ const char kAlohaScheme[] = "aloha";
 const char kAlohaDemoScheme[] = "aloha-demo";
 
 const char kAlohaAppsHost[] = "apps";
-}
+}  // namespace url
 
 namespace switches {
 const char kUseWebUI[] = "use-webui";
@@ -55,4 +56,15 @@ const char kAlohaHome[] = "aloha-app-main";
 }
 }  // namespace webapp
 
+// Aloha Native Resources
+namespace resources {
+const base::FilePath::CharType kAlohaResourcesPakName[] =
+    FPL("aloha_resources.pak");
+const base::FilePath::CharType kAloha100PercentPakName[] =
+    FPL("aloha_100_percent.pak");
+const base::FilePath::CharType kAloha200PercentPakName[] =
+    FPL("aloha_200_percent.pak");
+const base::FilePath::CharType kAlohaDefaultLocalePakName[] = 
+    FPL("en-US.pak");
+}  // namespace resources
 }  // namespace aloha

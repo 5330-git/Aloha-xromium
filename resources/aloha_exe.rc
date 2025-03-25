@@ -1,6 +1,6 @@
 #include <windows.h>
 #define IDR_MAINFRAME 101
-IDR_MAINFRAME ICON "app_icons/aloha.ico"
+IDR_MAINFRAME ICON "app_icon/aloha.ico"
 
 // 定义 VERSIONINFO 资源
 1 VERSIONINFO

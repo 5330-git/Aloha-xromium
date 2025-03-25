@@ -6,7 +6,7 @@
 
 #include "aloha/app/aloha_main.h"
 #include "aloha/common/aloha_main_client.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"

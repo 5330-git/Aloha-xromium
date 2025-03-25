@@ -13,10 +13,10 @@ index 60460cbc27..19935cb92f 100644
  
  # All Rust targets. This is provided for convenience while developing Rust to
 diff --git a/tools/gritsettings/resource_ids.spec b/tools/gritsettings/resource_ids.spec
-index a0a333d95d..431d1c3ad0 100644
+index a0a333d95d..0087a1db9a 100644
 --- a/tools/gritsettings/resource_ids.spec
 +++ b/tools/gritsettings/resource_ids.spec
-@@ -1385,11 +1385,22 @@
+@@ -1385,11 +1385,25 @@
    "<(SHARED_INTERMEDIATE_DIR)/third_party/blink/public/strings/permission_element_generated_strings.grd": {
      "META": {"sizes": {"messages": [2000],}},
      "messages": [10080],
@@ -30,13 +30,16 @@ index a0a333d95d..431d1c3ad0 100644
    # Please read the header and find the right section above instead.
 +
 +  # START aloha/ section.
-+  "aloha/resources/aloha_resources.grd": {
++  "aloha/resources/unscaled_resources.grd": {
 +    "messages": [12000],
-+    "structures": [12250],
 +  },
 +  "<(SHARED_INTERMEDIATE_DIR)/aloha/resources/browser/resources.grd": {
 +    "META": {"sizes": {"includes": [10]}},
 +    "includes": [12500],
-+  }
++  },
++  "aloha/resources/app_icon/app_icon_resources.grd": {
++    "messages": [12600],
++    "structures": [12700],
++  },
 +  # END aloha/ section.
  }

@@ -10,7 +10,7 @@
 #include "aloha/browser/ui/menu/setting_menu_model.h"
 #include "aloha/browser/ui/views/browser_content/public/browser_content_view.h"
 #include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"

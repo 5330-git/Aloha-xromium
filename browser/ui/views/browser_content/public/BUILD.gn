@@ -5,7 +5,6 @@ source_set("public") {
   ]
   public_deps = [
     "//aloha:resources",
-    "//aloha:resources_grit",
     "//aloha/browser/devtools:aloha_devtools",
     "//aloha/browser/ui/menu:menu",
     "//aloha/resources/browser:resources",

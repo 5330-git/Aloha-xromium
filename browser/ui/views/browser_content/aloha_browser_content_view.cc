@@ -4,7 +4,8 @@
 #include <utility>
 
 #include "aloha/browser/ui/color/color_ids.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/app_icon_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "aloha/resources/vector_icons/vector_icons.h"
 #include "aloha_browser_content_view.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
+
 
 // #include "widget/widget_delegate_view.h"
 
@@ -287,7 +289,8 @@ void AlohaBrowserContentView::CloseChildWidgets() {
 
 ui::ImageModel AlohaBrowserContentView::GetFavicon() {
   favicon::FaviconDriver* favicon_driver =
-      favicon::ContentFaviconDriver::FromWebContents(sub_views_.webview->GetWebContents());
+      favicon::ContentFaviconDriver::FromWebContents(
+          sub_views_.webview->GetWebContents());
   if (favicon_driver) {
     gfx::Image favicon_image = favicon_driver->GetFavicon();
     return ui::ImageModel::FromImage(favicon_image);
@@ -295,12 +298,12 @@ ui::ImageModel AlohaBrowserContentView::GetFavicon() {
   return ui::ImageModel::FromResourceId(IDR_ALOHA_ICON);
 }
 void AlohaBrowserContentView::DidUpdateFaviconURL(
-  content::RenderFrameHost* render_frame_host,
-  const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
-    for(auto& candidate : candidates) {
-      LOG(INFO) << "Favicon URL: " << candidate->icon_url.spec(); 
-    }
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+  for (auto& candidate : candidates) {
+    LOG(INFO) << "Favicon URL: " << candidate->icon_url.spec();
   }
+}
 
 WebAppContentView::WebAppContentView(const GURL& init_url,
                                      AlohaWidgetDelegateView* delegate)

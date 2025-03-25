@@ -10,7 +10,8 @@
 #include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane_tab.h"
 #include "aloha/browser/ui/views/controls/tabbed_pane/tabbed_pane_tab_strip.h"
 #include "aloha/common/aloha_paths.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/app_icon_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "aloha/resources/vector_icons/vector_icons.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -49,6 +50,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 #include "widget_delegate_view.h"
+
 
 namespace aloha {
 // namespace {

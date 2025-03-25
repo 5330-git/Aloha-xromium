@@ -12,16 +12,16 @@
 namespace {
 // Called after: AlohaContentMainDelegate::PreSandboxStartup()
 void OnResourcesLoaded() {
-  base::FilePath aloha_pak_file;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &aloha_pak_file));
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      aloha_pak_file.AppendASCII("aloha.pak"), ui::k100Percent);
+  // base::FilePath aloha_pak_file;
+  // CHECK(base::PathService::Get(base::DIR_ASSETS, &aloha_pak_file));
+  // ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+  //     aloha_pak_file.AppendASCII("aloha.pak"), ui::k100Percent);
 
-  base::FilePath ui_resource_percent100;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &aloha_pak_file));
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      ui_resource_percent100.AppendASCII("ui_resources_100_percent.pak"),
-      ui::k100Percent);
+  // base::FilePath ui_resource_percent100;
+  // CHECK(base::PathService::Get(base::DIR_ASSETS, &aloha_pak_file));
+  // ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+  //     ui_resource_percent100.AppendASCII("ui_resources_100_percent.pak"),
+  //     ui::k100Percent);
 }
 // View / Widget 是自动管理内存的，不需要手动释放，否则会触发 HEAP_CORRUPTION
 

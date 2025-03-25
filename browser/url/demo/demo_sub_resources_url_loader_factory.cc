@@ -2,7 +2,8 @@
 
 #include "aloha/common/aloha_constants.h"
 #include "aloha/common/aloha_paths.h"
-#include "aloha/grit/aloha_resources.h"
+#include "aloha/resources/grit/app_icon_resources.h"
+#include "aloha/resources/grit/unscaled_resources.h"
 #include "base/memory/ref_counted_memory.h"
 #include "demo_navigation_url_loader_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -13,6 +14,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/models/image_model.h"
+
 
 namespace aloha::url {
 namespace {
@@ -103,7 +105,8 @@ void DemoSubResourcesURLLoaderFactory::CreateLoaderAndStart(
       response->headers->AddHeader("Content-Type", "image/png");
       response->response_type = network::mojom::FetchResponseType::kDefault;
       response->mime_type = "image/png";
-      ui::ImageModel image_model = ui::ImageModel::FromResourceId(IDR_ALOHA_ICON);
+      ui::ImageModel image_model =
+          ui::ImageModel::FromResourceId(IDR_ALOHA_ICON);
       auto image_bytes = image_model.GetImage().As1xPNGBytes();
       data = std::string(image_bytes->begin(), image_bytes->end());
     } else {
@@ -116,7 +119,6 @@ void DemoSubResourcesURLLoaderFactory::CreateLoaderAndStart(
     auto producer =
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
     mojo::DataPipeProducer* raw_producer_ptr = producer.get();
-
 
     // 下面参考 net::DataURLLoaderFactory 实现
     auto write_data = std::make_unique<WriteData>();

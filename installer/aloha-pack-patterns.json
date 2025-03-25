@@ -1,0 +1,34 @@
+{
+  "runtime-dependencies-patterns": {
+    ".*\\.dll$" : {
+      "target-path": "${install_root}"
+    }
+  },
+  "specific-targets": {
+    "aloha.exe": {
+      "target-path": "${install_root}"
+    },
+    "aloha_resources.pak" : {
+      "target-path": "${install_root}"
+    },
+    "aloha_100_percent.pak" : {
+      "target-path": "${install_root}"
+    },
+    "aloha_200_percent.pak" : {
+      "target-path": "${install_root}"
+    },
+    "icudtl.dat" : {
+      "target-path": "${install_root}" 
+    },
+    "v8_context_snapshot.bin" : {
+      "target-path": "${install_root}" 
+    },
+    "locales/aloha/*.pak" : {
+      "target-path": "${install_root}/locales/aloha"
+    },
+    "aloha-webapp" : {
+      "target-path": "${install_root}/aloha-webapp"
+    }
+  }
+
+}

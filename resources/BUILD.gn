@@ -1,0 +1,25 @@
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/repack.gni")
+
+
+# 注意添加依赖的时候注意目标名称为 ${target_name}_grit
+grit("unscaled_resources") {
+  source = "unscaled_resources.grd"
+  output_dir = "$target_gen_dir"
+  outputs = [
+    "grit/unscaled_resources.h",
+    "unscaled_resources.pak",
+  ]
+}
+
+grit("app_icon_resources") {
+  source = "app_icon/app_icon_resources.grd"
+  outputs = [
+    "grit/app_icon_resources.h",
+    "grit/app_icon_resources_map.cc",
+    "grit/app_icon_resources_map.h",
+    "app_icon_resources_100_percent.pak",
+    "app_icon_resources_200_percent.pak",
+  ]
+  output_dir = "$target_gen_dir" 
+}
